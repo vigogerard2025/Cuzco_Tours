@@ -350,6 +350,7 @@ export function Nav() {
               UW
             </span>
             <span className="flex flex-col leading-tight">
+              <img src="/logo.png" alt="" />
               <span className="font-fraunces text-2xl font-bold tracking-tight text-stone-900">
                 URPI WAYRA
               </span>
