@@ -1,8 +1,8 @@
+"use client";
 import React from "react";
 import Link from "next/link";
 import { CalendarDays, BadgeInfo } from "lucide-react";
 import Image from "next/image";
-
 import { FaTripadvisor } from "react-icons/fa";
 import { useState, useRef, useEffect } from "react";
 import {
@@ -148,24 +148,17 @@ export function Nav() {
           title: t("grpClassicIncaTrail"),
           links: [
             {
-              label: "Camino Inca Corto 2 Días — Grupal",
-              href: "/tours/camino-inca-corto-2-dias-grupal",
+              label: "Walking tour of Cusco",
+              href: "/tours/camino-inca/cuzco-a-pie",
             },
             {
-              label: "Camino Inca Corto 2 Días — Privado",
-              href: "/tours/camino-inca-corto-2-dias-privado",
+              label: "Traditional Archaeological City Tour (Half-Day)",
+              href: "/tours/camino-inca/traditional-tour",
             },
             {
-              label: "Camino Inca Clásico 4 Días — Grupal",
-              href: "/tours/camino-inca-clasico-4-dias-grupal",
-            },
-            {
-              label: "Camino Inca 4 Días — Privado",
-              href: "/tours/camino-inca-4-dias-privado",
-            },
-            {
-              label: "Camino Inca 5 Días — Grupal",
-              href: "/tours/camino-inca-5-dias-grupal",
+              label:
+                "VIP Sacred Valley Tour (Full Day – Starting in Chinchero) ",
+              href: "/tours/camino-inca/sacred-valley",
             },
           ],
         },

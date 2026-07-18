@@ -140,8 +140,6 @@ export default function Home() {
 
   return (
     <>
-      <Nav />
-
       <main>
         {/* --- 1. Hero --- */}
         <HeroImage
