@@ -1,10 +1,12 @@
 import "./globals.css";
-import { Montserrat } from "next/font/google";
+import { Poppins } from "next/font/google";
+import { LanguageProvider } from "./context/LanguageContext";
 
-const montserrat = Montserrat({
+const poppins = Poppins({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
-  variable: "--font-montserrat",
+  weight: ["700", "800", "900"],
+  variable: "--font-poppins",
+  display: "swap",
 });
 
 export default function RootLayout({
@@ -13,9 +15,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="es">
-      <body className={montserrat.className}>
-        {children}
+    <html lang="en">
+      <body className={poppins.className}>
+        <LanguageProvider>{children}</LanguageProvider>
       </body>
     </html>
   );

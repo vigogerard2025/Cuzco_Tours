@@ -1,6 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { CalendarDays, BadgeInfo } from "lucide-react";
+import Image from "next/image";
 
 import { FaTripadvisor } from "react-icons/fa";
 import { useState, useRef, useEffect } from "react";
@@ -16,6 +17,9 @@ import {
   Users,
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa6";
+import { useLanguage } from "../context/LanguageContext"; // ajusta el path relativo a donde esté tu Nav.tsx
+import { languageMeta, Language } from "../lib/translations"; // ajusta el path relativo
+
 type BrandIconProps = {
   size?: number;
   className?: string;
@@ -72,6 +76,8 @@ function YoutubeIcon({ size = 16, className }: BrandIconProps) {
 
 // ---------------------------------------------------------------------------
 // Datos de navegación — ajusta estos arrays a tus 24 tours / categorías reales
+// Nota: los labels de tours individuales quedan sin traducir por ahora
+// (nombres de producto — requieren revisión humana antes de traducir).
 // ---------------------------------------------------------------------------
 
 type TourLink = {
@@ -88,154 +94,6 @@ type NavCategory = {
   }[];
 };
 
-const NAV_DATA: NavCategory[] = [
-  {
-    label: "Camino Inca",
-    href: "/tours/camino-inca",
-    groups: [
-      {
-        title: "El Camino Inca Clásico",
-        links: [
-          {
-            label: "Camino Inca Corto 2 Días — Grupal",
-            href: "/tours/camino-inca-corto-2-dias-grupal",
-          },
-          {
-            label: "Camino Inca Corto 2 Días — Privado",
-            href: "/tours/camino-inca-corto-2-dias-privado",
-          },
-          {
-            label: "Camino Inca Clásico 4 Días — Grupal",
-            href: "/tours/camino-inca-clasico-4-dias-grupal",
-          },
-          {
-            label: "Camino Inca 4 Días — Privado",
-            href: "/tours/camino-inca-4-dias-privado",
-          },
-          {
-            label: "Camino Inca 5 Días — Grupal",
-            href: "/tours/camino-inca-5-dias-grupal",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    label: "Treks Alternativos",
-    href: "/tours/treks-alternativos",
-    groups: [
-      {
-        title: "Salkantay",
-        links: [
-          {
-            label: "Salkantay 5 Días — Grupal",
-            href: "/tours/salkantay-5-dias-grupal",
-          },
-          {
-            label: "Salkantay 4 Días — Grupal",
-            href: "/tours/salkantay-4-dias-grupal",
-          },
-        ],
-      },
-      {
-        title: "Inca Jungle & Montaña de Colores",
-        links: [
-          { label: "Inca Jungle 4 Días", href: "/tours/inca-jungle-4-dias" },
-          {
-            label: "Montaña de Colores — Full Day",
-            href: "/tours/montana-de-colores-full-day",
-          },
-        ],
-      },
-      {
-        title: "Lares & Choquequirao",
-        links: [
-          { label: "Lares 4 Días", href: "/tours/lares-4-dias" },
-          { label: "Choquequirao 5 Días", href: "/tours/choquequirao-5-dias" },
-        ],
-      },
-    ],
-  },
-  {
-    label: "Cusco & Valle Sagrado",
-    href: "/tours/cusco-valle-sagrado",
-    groups: [
-      {
-        title: "Tours de un día",
-        links: [
-          { label: "City Tour Cusco", href: "/tours/city-tour-cusco" },
-          {
-            label: "Valle Sagrado — Privado",
-            href: "/tours/valle-sagrado-privado",
-          },
-          {
-            label: "Maras, Moray y Chinchero",
-            href: "/tours/maras-moray-chinchero",
-          },
-        ],
-      },
-      {
-        title: "Excursiones de varios días",
-        links: [
-          {
-            label: "Cusco Esencial 6 Días",
-            href: "/tours/cusco-esencial-6-dias",
-          },
-          {
-            label: "Cusco y Machu Picchu 5 Días",
-            href: "/tours/cusco-machu-picchu-5-dias",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    label: "Paquetes Multi-día",
-    href: "/tours/paquetes",
-    groups: [
-      {
-        title: "Paquetes de aventura",
-        links: [
-          {
-            label: "Lo Mejor de los Andes 12 Días",
-            href: "/tours/lo-mejor-de-los-andes-12-dias",
-          },
-          { label: "Cusco y Puno 10 Días", href: "/tours/cusco-puno-10-dias" },
-        ],
-      },
-      {
-        title: "Paquetes culturales",
-        links: [
-          {
-            label: "Perú Esencial 11 Días",
-            href: "/tours/peru-esencial-11-dias",
-          },
-          {
-            label: "Machu Picchu, Cusco y Puno 8 Días",
-            href: "/tours/machu-picchu-cusco-puno-8-dias",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    label: "Tours de Lujo",
-    href: "/tours/lujo",
-    groups: [
-      {
-        title: "Experiencias premium",
-        links: [
-          {
-            label: "Tren Hiram Bingham a Machu Picchu",
-            href: "/tours/tren-hiram-bingham",
-          },
-          { label: "Cusco Lujoso 6 Días", href: "/tours/cusco-lujoso-6-dias" },
-        ],
-      },
-    ],
-  },
-];
-
 const TOPBAR_CONTACT = {
   email: "info@urpiwayratours.com", // placeholder — reemplazar con dato real
   phoneLabel: "+51 900 000 000", // placeholder — reemplazar con dato real
@@ -249,12 +107,15 @@ const SOCIALS = [
 ];
 
 export function Nav() {
+  const { language, setLanguage, t } = useLanguage();
+
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileSubmenu, setMobileSubmenu] = useState<string | null>(null);
   const [scrolled, setScrolled] = useState(false);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [languageOpen, setLanguageOpen] = useState(false);
+
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
     onScroll();
@@ -270,6 +131,170 @@ export function Nav() {
   const handleLeave = () => {
     closeTimer.current = setTimeout(() => setOpenMenu(null), 120);
   };
+
+  const handleLanguageSelect = (lang: Language) => {
+    setLanguage(lang);
+    setLanguageOpen(false);
+  };
+
+  // NAV_DATA vive dentro del componente porque usa t() para traducir
+  // labels de categorías y títulos de grupos.
+  const NAV_DATA: NavCategory[] = [
+    {
+      label: t("catIncaTrail"),
+      href: "/tours/camino-inca",
+      groups: [
+        {
+          title: t("grpClassicIncaTrail"),
+          links: [
+            {
+              label: "Camino Inca Corto 2 Días — Grupal",
+              href: "/tours/camino-inca-corto-2-dias-grupal",
+            },
+            {
+              label: "Camino Inca Corto 2 Días — Privado",
+              href: "/tours/camino-inca-corto-2-dias-privado",
+            },
+            {
+              label: "Camino Inca Clásico 4 Días — Grupal",
+              href: "/tours/camino-inca-clasico-4-dias-grupal",
+            },
+            {
+              label: "Camino Inca 4 Días — Privado",
+              href: "/tours/camino-inca-4-dias-privado",
+            },
+            {
+              label: "Camino Inca 5 Días — Grupal",
+              href: "/tours/camino-inca-5-dias-grupal",
+            },
+          ],
+        },
+      ],
+    },
+    {
+      label: t("catAltTreks"),
+      href: "/tours/treks-alternativos",
+      groups: [
+        {
+          title: t("grpSalkantay"),
+          links: [
+            {
+              label: "Salkantay 5 Días — Grupal",
+              href: "/tours/salkantay-5-dias-grupal",
+            },
+            {
+              label: "Salkantay 4 Días — Grupal",
+              href: "/tours/salkantay-4-dias-grupal",
+            },
+          ],
+        },
+        {
+          title: t("grpJungleColors"),
+          links: [
+            { label: "Inca Jungle 4 Días", href: "/tours/inca-jungle-4-dias" },
+            {
+              label: "Montaña de Colores — Full Day",
+              href: "/tours/montana-de-colores-full-day",
+            },
+          ],
+        },
+        {
+          title: t("grpLaresChoq"),
+          links: [
+            { label: "Lares 4 Días", href: "/tours/lares-4-dias" },
+            {
+              label: "Choquequirao 5 Días",
+              href: "/tours/choquequirao-5-dias",
+            },
+          ],
+        },
+      ],
+    },
+    {
+      label: t("catSacredValley"),
+      href: "/tours/cusco-valle-sagrado",
+      groups: [
+        {
+          title: t("grpDayTours"),
+          links: [
+            { label: "City Tour Cusco", href: "/tours/city-tour-cusco" },
+            {
+              label: "Valle Sagrado — Privado",
+              href: "/tours/valle-sagrado-privado",
+            },
+            {
+              label: "Maras, Moray y Chinchero",
+              href: "/tours/maras-moray-chinchero",
+            },
+          ],
+        },
+        {
+          title: t("grpMultiDay"),
+          links: [
+            {
+              label: "Cusco Esencial 6 Días",
+              href: "/tours/cusco-esencial-6-dias",
+            },
+            {
+              label: "Cusco y Machu Picchu 5 Días",
+              href: "/tours/cusco-machu-picchu-5-dias",
+            },
+          ],
+        },
+      ],
+    },
+    {
+      label: t("catPackages"),
+      href: "/tours/paquetes",
+      groups: [
+        {
+          title: t("grpAdventure"),
+          links: [
+            {
+              label: "Lo Mejor de los Andes 12 Días",
+              href: "/tours/lo-mejor-de-los-andes-12-dias",
+            },
+            {
+              label: "Cusco y Puno 10 Días",
+              href: "/tours/cusco-puno-10-dias",
+            },
+          ],
+        },
+        {
+          title: t("grpCultural"),
+          links: [
+            {
+              label: "Perú Esencial 11 Días",
+              href: "/tours/peru-esencial-11-dias",
+            },
+            {
+              label: "Machu Picchu, Cusco y Puno 8 Días",
+              href: "/tours/machu-picchu-cusco-puno-8-dias",
+            },
+          ],
+        },
+      ],
+    },
+    {
+      label: t("catLuxury"),
+      href: "/tours/lujo",
+      groups: [
+        {
+          title: t("grpPremium"),
+          links: [
+            {
+              label: "Tren Hiram Bingham a Machu Picchu",
+              href: "/tours/tren-hiram-bingham",
+            },
+            {
+              label: "Cusco Lujoso 6 Días",
+              href: "/tours/cusco-lujoso-6-dias",
+            },
+          ],
+        },
+      ],
+    },
+  ];
 
   return (
     <header className="sticky top-0 z-50 font-medium">
@@ -312,15 +337,6 @@ export function Nav() {
             <MessageCircle size={13} className="text-amber-400" />
             WhatsApp
           </a>
-          <a
-            href={`https://wa.me/${TOPBAR_CONTACT.whatsapp}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1.5 sm:hidden"
-          >
-            <MessageCircle size={13} className="text-amber-400" />
-            WhatsApp
-          </a>
 
           <div className="flex items-center gap-3">
             {SOCIALS.map(({ icon: Icon, href, label }) => (
@@ -349,13 +365,22 @@ export function Nav() {
             <span className="flex h-11 w-11 items-center justify-center rounded-full bg-terracotta-600 text-lg font-bold text-white">
               UW
             </span>
-            <span className="flex flex-col leading-tight">
-              <img src="/logo.png" alt="" />
-              <span className="font-fraunces text-2xl font-bold tracking-tight text-stone-900">
-                URPI WAYRA
-              </span>
-              <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-700">
-                Cuzco Tours
+            <span className="flex items-center gap-3">
+              <Image
+                src="/logo.jpg"
+                alt="Urpi Wayra Logo"
+                width={60}
+                height={60}
+                priority
+              />
+              <span className="flex flex-col leading-tight">
+                <span className="font-fraunces text-2xl font-bold tracking-tight text-stone-900">
+                  URPI WAYRA
+                </span>
+
+                <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-700">
+                  Cuzco Tours
+                </span>
               </span>
             </span>
           </Link>
@@ -369,21 +394,21 @@ export function Nav() {
               className="flex items-center gap-1.5 text-sm font-semibold text-stone-700 transition-colors hover:text-terracotta-600"
             >
               <FaTripadvisor className="h-5 w-5" />
-              Reseñas
+              {t("reviews")}
             </a>
             <Link
               href="/permiso-camino-inca"
               className="flex items-center gap-1.5 text-sm font-semibold text-stone-700 transition-colors hover:text-terracotta-600"
             >
               <CalendarDays className="h-5 w-5" />
-              Disponibilidad Camino Inca
+              {t("incaTrailAvailability")}
             </Link>
             <Link
               href="/quienes-somos"
               className="flex items-center gap-1.5 text-sm font-semibold text-stone-700 transition-colors hover:text-terracotta-600"
             >
               <Users size={16} className="text-black" />
-              Quiénes Somos
+              {t("aboutUs")}
             </Link>
           </div>
 
@@ -395,47 +420,32 @@ export function Nav() {
                 className="flex items-center gap-2 text-sm font-semibold text-stone-700 transition hover:text-terracotta-600"
               >
                 <img
-                  src="https://flagcdn.com/w20/es.png"
-                  alt="Español"
+                  src={languageMeta[language].flag}
+                  alt={languageMeta[language].label}
                   className="h-4 w-6 rounded-sm object-cover"
                 />
-                ES
+                {languageMeta[language].code}
                 <ChevronDown size={16} />
               </button>
 
               {languageOpen && (
                 <div className="absolute right-0 z-50 mt-2 w-44 overflow-hidden rounded-lg border bg-white shadow-xl">
-                  <button className="flex w-full items-center gap-3 px-4 py-3 text-sm hover:bg-gray-100">
-                    <img
-                      src="https://flagcdn.com/w20/es.png"
-                      className="h-4 w-6"
-                    />
-                    Español
-                  </button>
-
-                  <button className="flex w-full items-center gap-3 px-4 py-3 text-sm hover:bg-gray-100">
-                    <img
-                      src="https://flagcdn.com/w20/us.png"
-                      className="h-4 w-6"
-                    />
-                    English
-                  </button>
-
-                  <button className="flex w-full items-center gap-3 px-4 py-3 text-sm hover:bg-gray-100">
-                    <img
-                      src="https://flagcdn.com/w20/fr.png"
-                      className="h-4 w-6"
-                    />
-                    Français
-                  </button>
-
-                  <button className="flex w-full items-center gap-3 px-4 py-3 text-sm hover:bg-gray-100">
-                    <img
-                      src="https://flagcdn.com/w20/de.png"
-                      className="h-4 w-6"
-                    />
-                    Deutsch
-                  </button>
+                  {(Object.keys(languageMeta) as Language[]).map((lang) => (
+                    <button
+                      key={lang}
+                      onClick={() => handleLanguageSelect(lang)}
+                      className={`flex w-full items-center gap-3 px-4 py-3 text-sm hover:bg-gray-100 ${
+                        language === lang ? "bg-gray-50 font-semibold" : ""
+                      }`}
+                    >
+                      <img
+                        src={languageMeta[lang].flag}
+                        alt={languageMeta[lang].label}
+                        className="h-4 w-6 rounded-sm object-cover"
+                      />
+                      {languageMeta[lang].label}
+                    </button>
+                  ))}
                 </div>
               )}
             </div>
@@ -444,13 +454,13 @@ export function Nav() {
               href="/contacto"
               className="hidden bg-blue-900 px-5 py-2.5 text-sm font-bold text-white shadow-sm transition-colors hover:bg-terracotta-700 sm:inline-block"
             >
-              CONTÁCTENOS
+              {t("contactUs")}
             </Link>
 
             {/* Botón menú */}
             <button
               type="button"
-              aria-label="Abrir menú"
+              aria-label={t("openMenu")}
               onClick={() => setMobileOpen(true)}
               className="rounded-md p-2 text-stone-700 hover:bg-stone-100 lg:hidden"
             >
@@ -517,7 +527,7 @@ export function Nav() {
                 href="/ofertas"
                 className="px-4 py-3.5 text-sm font-bold uppercase tracking-wide text-amber-600 transition-colors hover:text-amber-700"
               >
-                Ofertas
+                {t("offers")}
               </Link>
             </li>
             <li>
@@ -525,7 +535,7 @@ export function Nav() {
                 href="/blog"
                 className="px-4 py-3.5 text-sm font-bold uppercase tracking-wide text-stone-800 transition-colors hover:text-terracotta-600"
               >
-                Blog
+                {t("blog")}
               </Link>
             </li>
           </ul>
@@ -549,7 +559,7 @@ export function Nav() {
               </span>
               <button
                 type="button"
-                aria-label="Cerrar menú"
+                aria-label={t("closeMenu")}
                 onClick={() => setMobileOpen(false)}
                 className="rounded-md p-2 text-stone-700 hover:bg-stone-100"
               >
@@ -617,7 +627,7 @@ export function Nav() {
                     className="text-sm font-bold uppercase tracking-wide text-amber-600"
                     onClick={() => setMobileOpen(false)}
                   >
-                    Ofertas
+                    {t("offers")}
                   </Link>
                 </li>
                 <li className="border-b border-stone-100 py-2.5">
@@ -626,7 +636,7 @@ export function Nav() {
                     className="text-sm font-bold uppercase tracking-wide text-stone-800"
                     onClick={() => setMobileOpen(false)}
                   >
-                    Blog
+                    {t("blog")}
                   </Link>
                 </li>
                 <li className="py-2.5">
@@ -635,7 +645,7 @@ export function Nav() {
                     className="text-sm font-semibold text-stone-700"
                     onClick={() => setMobileOpen(false)}
                   >
-                    Quiénes Somos
+                    {t("aboutUs")}
                   </Link>
                 </li>
                 <li className="py-2.5">
@@ -644,7 +654,7 @@ export function Nav() {
                     className="text-sm font-semibold text-stone-700"
                     onClick={() => setMobileOpen(false)}
                   >
-                    Disponibilidad Camino Inca
+                    {t("incaTrailAvailability")}
                   </Link>
                 </li>
               </ul>
@@ -656,7 +666,7 @@ export function Nav() {
                 className="block w-full rounded-full bg-terracotta-600 px-5 py-3 text-center text-sm font-bold text-white"
                 onClick={() => setMobileOpen(false)}
               >
-                Contáctenos
+                {t("contactUs")}
               </Link>
             </div>
           </div>
