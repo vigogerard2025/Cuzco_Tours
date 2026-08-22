@@ -386,7 +386,7 @@ export function Nav() {
               rel="noopener noreferrer"
               className="flex items-center gap-1.5 text-sm font-semibold text-stone-700 transition-colors hover:text-terracotta-600"
             >
-              <FaTripadvisor className="h-5 w-5" />
+              <FaTripadvisor />
               {t("reviews")}
             </a>
             <Link
