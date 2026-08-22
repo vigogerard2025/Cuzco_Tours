@@ -21,6 +21,9 @@
 //   />
 // =========================================================
 
+import Image from "next/image";
+import Link from "next/link";
+
 export interface TourCardProps {
   href: string;
   imageSrc: string;
@@ -73,17 +76,18 @@ export default function TourCard({
   currency = "USD",
 }: TourCardProps) {
   return (
-    <a
+    <Link
       href={href}
       className="group flex flex-col w-full bg-white rounded-2xl overflow-hidden border border-[#E8E2D5] hover:border-[#D9A24B]/50 hover:shadow-lg hover:shadow-[#3D2B1F]/8 transition-all duration-300"
     >
       {/* --- Imagen --- */}
       <div className="relative aspect-[4/3] overflow-hidden bg-[#E8E2D5]">
-        <img
+        <Image
           src={imageSrc}
           alt={imageAlt}
-          loading="lazy"
-          className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          fill
+          sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+          className="object-cover transition-transform duration-500 group-hover:scale-105"
         />
         {badge && (
           <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-[#2B2118]/80 backdrop-blur-sm text-[11px] font-manrope font-semibold tracking-wide text-[#F4EDE2]">
@@ -159,6 +163,6 @@ export default function TourCard({
           </svg>
         </span>
       </div>
-    </a>
+    </Link>
   );
 }

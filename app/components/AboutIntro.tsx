@@ -22,6 +22,9 @@
 //   />
 // =========================================================
 
+import Image from "next/image";
+import Link from "next/link";
+
 interface AboutIntroProps {
   eyebrow?: string;
   title: string;
@@ -69,11 +72,12 @@ export default function AboutIntro({
           className={`relative ${imagenPrimero ? "lg:order-1" : "lg:order-2"}`}
         >
           <div className="relative aspect-[5/4] rounded-2xl overflow-hidden">
-            <img
+            <Image
               src={imageSrc}
               alt={imageAlt}
-              loading="lazy"
-              className="absolute inset-0 w-full h-full object-cover"
+              fill
+              sizes="(min-width: 1024px) 50vw, 100vw"
+              className="object-cover"
             />
           </div>
           {/* Acento decorativo: marco terracota detrás de la imagen */}
@@ -103,7 +107,7 @@ export default function AboutIntro({
           </div>
 
           {ctaLabel && ctaHref && (
-            <a
+            <Link
               href={ctaHref}
               className="mt-7 inline-flex items-center gap-2.5 px-6 py-3 rounded-full bg-[#A8512E] hover:bg-[#8A3F22] text-[#F4EDE2] font-manrope text-sm font-semibold transition-colors"
             >
@@ -117,7 +121,7 @@ export default function AboutIntro({
                   strokeLinejoin="round"
                 />
               </svg>
-            </a>
+            </Link>
           )}
         </div>
       </div>

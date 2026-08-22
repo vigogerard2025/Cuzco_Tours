@@ -13,6 +13,7 @@
 // =========================================================
 
 import { useState, useRef, useEffect, useCallback } from "react";
+import Image from "next/image";
 
 export interface HeroImageSlide {
   src: string;
@@ -57,8 +58,10 @@ export default function HeroImage({
   const montado = useRef(false);
 
   // Guarda el índice que ACABA de dejar de estar activo, para poder
-  // animarlo "saliendo" en la dirección correcta.
-  const indiceSalienteRef = useRef<number | null>(null);
+  // animarlo "saliendo" en la dirección correcta. Usamos estado (no ref)
+  // porque este valor se lee durante el render, y leer un ref durante el
+  // render no es seguro en React (ver regla react-hooks/refs).
+  const [indiceSaliente, setIndiceSaliente] = useState<number | null>(null);
 
   // Evita que el hover dispare varias transiciones seguidas mientras
   // el cursor permanece sobre la flecha.
@@ -77,12 +80,10 @@ export default function HeroImage({
     (nuevoIndice: number, dir: "siguiente" | "anterior") => {
       if (totalSlides === 0) return;
       setDireccion(dir);
-      setIndice((actual) => {
-        indiceSalienteRef.current = actual;
-        return ((nuevoIndice % totalSlides) + totalSlides) % totalSlides;
-      });
+      setIndiceSaliente(indice);
+      setIndice(((nuevoIndice % totalSlides) + totalSlides) % totalSlides);
     },
-    [totalSlides],
+    [totalSlides, indice],
   );
 
   const irSiguiente = useCallback(() => {
@@ -147,7 +148,7 @@ export default function HeroImage({
       {/* --- Capas de imagen: fade + slide direccional + Ken Burns --- */}
       {orden.map((slide, i) => {
         const esActiva = i === indice;
-        const esSaliente = indiceSalienteRef.current === i && !esActiva;
+        const esSaliente = indiceSaliente === i && !esActiva;
 
         // Desplazamiento horizontal (%) según el estado del slide.
         // - Activa: siempre en el centro (0%)
@@ -183,16 +184,18 @@ export default function HeroImage({
               zIndex,
             }}
           >
-            <div
-              className="absolute inset-0 bg-cover bg-center"
+            <Image
+              src={slide.src}
+              alt={slide.alt}
+              fill
+              priority={i === 0}
+              sizes="100vw"
+              className="object-cover"
               style={{
-                backgroundImage: `url(${slide.src})`,
                 animation: esActiva
                   ? "heroKenBurns 9s ease-out forwards"
                   : "none",
               }}
-              role="img"
-              aria-label={slide.alt}
             />
           </div>
         );

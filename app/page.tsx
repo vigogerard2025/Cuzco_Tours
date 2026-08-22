@@ -1,6 +1,5 @@
 "use client";
 
-import Nav from "./components/Nav";
 import HeroImage from "./components/HeroImage";
 import AboutIntro from "./components/AboutIntro";
 import TourCardCarousel from "./components/TourCardCarousel";
@@ -128,7 +127,7 @@ const REASONS_FIXED_ICONS = [
 ] as const;
 
 const HERO_IMAGES_FIXED = [
-  { src: "./slides-images/cuzco2.jpg" },
+  { src: "/slides-images/cuzco2.jpg" },
   { src: "/images/hero/02-machupicchu.jpg" },
   { src: "/images/hero/03-valle-sagrado.jpg" },
   { src: "/images/hero/04-humantay.jpg" },
@@ -145,7 +144,7 @@ export default function Home() {
         <HeroImage
           title={content.hero.title}
           subtitle={content.hero.subtitle}
-          images={HERO_IMAGES_FIXED.map((img, i) => ({
+          images={HERO_IMAGES_FIXED.map((img) => ({
             src: img.src,
             alt: content.hero.title, // texto alternativo genérico traducido
           }))}
