@@ -6,7 +6,6 @@
 // =========================================================
 
 import { prisma } from "./prisma";
-import { Prisma } from "@prisma/client";
 
 // ---------------------------------------------------------
 // Forma de datos que consume <TourCard /> / <TourCardCarousel />
@@ -23,9 +22,25 @@ export interface TourCardData {
   priceFrom: number;
 }
 
-type TourWithOptions = Prisma.TourGetPayload<{
-  include: { options: true };
-}>;
+// ---------------------------------------------------------
+// Consulta base reutilizada por getHomepageCategoryTours() y
+// getHomepageTopTours(). El tipo TourWithOptions se infiere
+// automáticamente de esta función (más robusto entre versiones
+// de Prisma que construir el tipo a mano con Prisma.TourGetPayload).
+// ---------------------------------------------------------
+async function findToursWithOptions(
+  where: { category?: string; published: boolean } | Record<string, unknown>,
+  limit: number,
+) {
+  return prisma.tour.findMany({
+    where,
+    orderBy: [{ featured: "desc" }, { createdAt: "asc" }],
+    take: limit,
+    include: { options: true },
+  });
+}
+
+type TourWithOptions = Awaited<ReturnType<typeof findToursWithOptions>>[number];
 
 // ---------------------------------------------------------
 // Convierte un Tour de Prisma a la forma que espera TourCard.
@@ -56,7 +71,7 @@ function toCardData(tour: TourWithOptions): TourCardData | null {
   return {
     href: `/tours/${tour.slug}`,
     // Usa la imagen real del tour; si aún no se asignó, cae a un placeholder.
-    imageSrc: tour.imageUrl ?? "/images/camino-inca1.jpg",
+    imageSrc: tour.imageUrl ?? "/images/placeholder-tour.jpg",
     imageAlt: tour.name,
     badge,
     title: tour.name,
@@ -74,12 +89,10 @@ export async function getHomepageCategoryTours(
   category: string,
   limit = 4,
 ): Promise<TourCardData[]> {
-  const tours = await prisma.tour.findMany({
-    where: { category, published: true },
-    orderBy: [{ featured: "desc" }, { createdAt: "asc" }],
-    take: limit,
-    include: { options: true },
-  });
+  const tours = await findToursWithOptions(
+    { category, published: true },
+    limit,
+  );
 
   return tours.map(toCardData).filter((t): t is TourCardData => t !== null);
 }
@@ -92,15 +105,13 @@ export async function getHomepageTopTours(
   excludeCategory?: string,
   limit = 4,
 ): Promise<TourCardData[]> {
-  const tours = await prisma.tour.findMany({
-    where: {
+  const tours = await findToursWithOptions(
+    {
       published: true,
       ...(excludeCategory ? { category: { not: excludeCategory } } : {}),
     },
-    orderBy: [{ featured: "desc" }, { createdAt: "asc" }],
-    take: limit,
-    include: { options: true },
-  });
+    limit,
+  );
 
   return tours.map(toCardData).filter((t): t is TourCardData => t !== null);
 }
