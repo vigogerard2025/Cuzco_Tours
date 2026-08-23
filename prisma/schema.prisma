@@ -1,6 +1,5 @@
 // =========================================================
-// SCHEMA PRISMA - Urpi Wayra Adventures
-// Generado a partir de los catálogos: Camino Inca + Cusco/Valle Sagrado
+// PRISMA SCHEMA - Urpi Wayra Adventures
 // =========================================================
 
 generator client {
@@ -10,34 +9,37 @@ generator client {
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")   // ← esto es nuevo, agrégalo a tu .env también
+  directUrl = env("DIRECT_URL")
 }
 
 // ---------------------------------------------------------
-// TOUR: la entidad principal (ej: "Camino Inca Clásico 4D",
-// "City Tour Cusco", "Valle Sagrado VIP")
+// TOUR: main entity (e.g. "Classic 4D Inca Trail",
+// "Cusco City Tour", "Sacred Valley VIP")
 // ---------------------------------------------------------
 model Tour {
-  id             String   @id @default(cuid())
-  slug           String   @unique
-  name           String
-  category       String   // "Camino Inca" | "Cusco & Valle Sagrado" | "Treks Alternativos" | etc.
+  id               String  @id @default(cuid())
+  slug             String  @unique
+  name             String
+  category         String  // "Inca Trail" | "Cusco & Sacred Valley" | "Alternative Treks" | etc.
 
-  // Descripción general / marketing
-  shortDescription String? @db.Text  // ej: "Explora la magia de la capital inca..."
+  // Marketing / description
+  shortDescription String? @db.Text
   description      String? @db.Text
 
-  // Specs del trekking/tour (aplica sobre todo a Camino Inca)
+  // Trek/tour specs (mostly applies to multi-day treks)
   durationDays     Int
   durationNights   Int?
-  difficulty       String?   // "Moderada a Desafiante", "Fácil", etc.
-  maxAltitudeM     Int?      // altitud máxima en msnm
-  minGroupSize     Int?      // ej: 2
-  maxGroupSize     Int?      // ej: 12
-  guideLanguages   String?   // "Inglés y Español"
+  difficulty       String?  // "Moderate to challenging", "Easy", etc.
+  maxAltitudeM     Int?     // max altitude in meters above sea level
+  minGroupSize     Int?
+  maxGroupSize     Int?
+  guideLanguages   String?  // "English and Spanish"
 
-  // Lugares que visita (para tours tipo City Tour / Valle Sagrado)
-  placesVisited    String?   @db.Text // lista separada por comas o JSON
+  // Places visited (for city tours / valley tours)
+  placesVisited    String?  @db.Text
+
+  // Cover image, served from /public (e.g. "/images/tours/salkantay-5-dias/01.jpg")
+  imageUrl         String?
 
   published        Boolean  @default(false)
   featured         Boolean  @default(false)
@@ -48,135 +50,133 @@ model Tour {
   itinerary        TourItinerary[]
   options          TourOption[]
   inclusions       TourInclusion[]
-  reservas         Reserva[]
+  bookings         Booking[]
 
   @@index([category])
   @@index([published])
 }
 
 // ---------------------------------------------------------
-// TOUR ITINERARY: día a día (solo aplica a tours multi-día
-// como Camino Inca; los tours de 1 día pueden omitir esto)
+// TOUR ITINERARY: day-by-day breakdown (multi-day tours only)
 // ---------------------------------------------------------
 model TourItinerary {
-  id                 String  @id @default(cuid())
-  tourId             String
-  tour               Tour    @relation(fields: [tourId], references: [id], onDelete: Cascade)
+  id                String  @id @default(cuid())
+  tourId            String
+  tour              Tour    @relation(fields: [tourId], references: [id], onDelete: Cascade)
 
-  dayNumber          Int
-  title              String  // "El Reto Mayor – Conquistando el Paso de la Mujer Muerta"
-  route              String? // "Wayllabamba → Warmiwañusqa → Pacaymayo"
-  description        String  @db.Text
+  dayNumber         Int
+  title             String
+  route             String? // "Wayllabamba → Warmiwañusca → Pacaymayo"
+  description       String  @db.Text
 
-  distanceKm         Float?
-  durationText       String? // "6-7 horas" (texto libre, más flexible que un número)
-  altitudeM          Int?    // altitud del campamento/parada de ese día
+  distanceKm        Float?
+  durationText      String? // free text, e.g. "6-7 hours"
+  altitudeM         Int?
 
-  accommodationType  String? // "Campamento" | "Hotel"
-  accommodationName  String? // "Wiñay Wayna (2,680 m)"
+  accommodationType String? // "Campsite" | "Hotel"
+  accommodationName String?
 
-  createdAt          DateTime @default(now())
+  createdAt         DateTime @default(now())
 
   @@unique([tourId, dayNumber])
 }
 
 // ---------------------------------------------------------
-// TOUR OPTION: modalidad y precio (Grupal / Privada)
-// Un tour puede tener 1 o varias opciones
+// TOUR OPTION: modality and price (Group / Private)
+// A tour can have one or several options
 // ---------------------------------------------------------
 model TourOption {
-  id               String   @id @default(cuid())
-  tourId           String
-  tour             Tour     @relation(fields: [tourId], references: [id], onDelete: Cascade)
+  id             String   @id @default(cuid())
+  tourId         String
+  tour           Tour     @relation(fields: [tourId], references: [id], onDelete: Cascade)
 
-  modality         String   // "Grupal" | "Privada"
-  pricePerPerson   Decimal? @db.Decimal(10, 2) // null = "Contact for pricing"
-  currency         String   @default("USD")
-  minPeople        Int?     @default(1)        // ej: mínimo 2 para privado
-  maxPeople        Int?
+  modality       String   // "Group" | "Private"
+  pricePerPerson Decimal? @db.Decimal(10, 2) // null = "Contact for pricing"
+  currency       String   @default("USD")
+  minPeople      Int?     @default(1)
+  maxPeople      Int?
 
-  active           Boolean  @default(true)
+  active         Boolean  @default(true)
 
-  reservas         Reserva[]
+  bookings       Booking[]
 
   @@unique([tourId, modality])
 }
 
 // ---------------------------------------------------------
-// TOUR INCLUSION: qué incluye / qué no incluye
-// (un solo modelo con un campo "type" para no duplicar tablas)
+// TOUR INCLUSION: what's included / not included
 // ---------------------------------------------------------
 model TourInclusion {
-  id       String @id @default(cuid())
-  tourId   String
-  tour     Tour   @relation(fields: [tourId], references: [id], onDelete: Cascade)
+  id     String        @id @default(cuid())
+  tourId String
+  tour   Tour          @relation(fields: [tourId], references: [id], onDelete: Cascade)
 
-  type     InclusionType // INCLUYE | NO_INCLUYE
-  item     String        @db.Text
-  order    Int           @default(0)
+  type   InclusionType
+  item   String        @db.Text
+  order  Int           @default(0)
 
   @@index([tourId, type])
 }
 
 enum InclusionType {
-  INCLUYE
-  NO_INCLUYE
+  INCLUDED
+  NOT_INCLUDED
 }
 
 // ---------------------------------------------------------
-// RESERVA: la reserva que hace un cliente
+// BOOKING: a customer's reservation
 // ---------------------------------------------------------
-model Reserva {
-  id             String   @id @default(cuid())
+model Booking {
+  id             String        @id @default(cuid())
   tourId         String
-  tour           Tour     @relation(fields: [tourId], references: [id])
+  tour           Tour          @relation(fields: [tourId], references: [id])
   tourOptionId   String
-  tourOption     TourOption @relation(fields: [tourOptionId], references: [id])
+  tourOption     TourOption    @relation(fields: [tourOptionId], references: [id])
 
-  clienteNombre  String
-  clienteEmail   String
-  clienteTelefono String?
+  customerName   String
+  customerEmail  String
+  customerPhone  String?
 
-  numPersonas    Int
-  fechaViaje     DateTime
-  montoTotal     Decimal  @db.Decimal(10, 2)
-  currency       String   @default("USD")
+  numberOfPeople Int
+  travelDate     DateTime
+  totalAmount    Decimal       @db.Decimal(10, 2)
+  currency       String        @default("USD")
 
-  estado         ReservaEstado @default(PENDIENTE)
+  status         BookingStatus @default(PENDING)
 
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
 
-  pago           Pago?
+  payment        Payment?
 
   @@index([tourId])
-  @@index([estado])
+  @@index([status])
 }
 
-enum ReservaEstado {
-  PENDIENTE
-  CONFIRMADA
-  CANCELADA
-  COMPLETADA
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
 }
 
 // ---------------------------------------------------------
-// PAGO: registro del pago vía Mercado Pago Checkout Pro
+// PAYMENT: Mercado Pago Checkout Pro payment record
 // ---------------------------------------------------------
-model Pago {
-  id                String   @id @default(cuid())
-  reservaId         String   @unique
-  reserva           Reserva  @relation(fields: [reservaId], references: [id])
+model Payment {
+  id              String   @id @default(cuid())
+  bookingId       String   @unique
+  booking         Booking  @relation(fields: [bookingId], references: [id])
 
-  mercadoPagoId     String   @unique // payment_id que devuelve MP
-  preferenceId      String?
-  status            String   // "approved" | "pending" | "rejected", etc. (viene de MP)
-  statusDetail      String?
-  monto             Decimal  @db.Decimal(10, 2)
-  currency          String   @default("USD")
+  mercadoPagoId   String   @unique // payment_id returned by Mercado Pago
+  preferenceId    String?
+  status          String   // "approved" | "pending" | "rejected", etc. (from MP)
+  statusDetail    String?
+  amount          Decimal  @db.Decimal(10, 2)
+  currency        String   @default("USD")
 
-  webhookVerified   Boolean  @default(false)
+  webhookVerified Boolean  @default(false)
 
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }

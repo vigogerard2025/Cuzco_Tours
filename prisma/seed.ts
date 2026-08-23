@@ -1,7 +1,7 @@
 // =========================================================
 // SEED.TS - Urpi Wayra Adventures
-// Consolida: Camino Inca (2D/4D/5D/7D), Salkantay (4D/5D),
-// Inca Jungle (3D/4D), Cusco & Valle Sagrado (7 tours)
+// Consolidates: Inca Trail (2D/4D/5D/7D), Salkantay (4D/5D),
+// Inca Jungle (3D/4D), Cusco & Sacred Valley (7 tours)
 // =========================================================
 
 import { PrismaClient, InclusionType } from "@prisma/client";
@@ -9,7 +9,7 @@ import { PrismaClient, InclusionType } from "@prisma/client";
 const prisma = new PrismaClient();
 
 // ---------------------------------------------------------
-// TIPOS
+// TYPES
 // ---------------------------------------------------------
 interface ItineraryDay {
   dayNumber: number;
@@ -31,7 +31,7 @@ interface TourOptionData {
 }
 
 interface InclusionData {
-  type: "INCLUYE" | "NO_INCLUYE";
+  type: "INCLUDED" | "NOT_INCLUDED";
   item: string;
 }
 
@@ -48,6 +48,7 @@ interface TourData {
   maxGroupSize?: number;
   guideLanguages?: string;
   placesVisited?: string;
+  imageUrl?: string;
   published: boolean;
   featured?: boolean;
   itinerary?: ItineraryDay[];
@@ -56,7 +57,7 @@ interface TourData {
 }
 
 // ---------------------------------------------------------
-// DATA: CAMINO INCA
+// DATA: INCA TRAIL
 // ---------------------------------------------------------
 const caminoInca: TourData[] = [
   {
@@ -100,26 +101,26 @@ const caminoInca: TourData[] = [
       { modality: "Privada", pricePerPerson: null, minPeople: 2 },
     ],
     inclusions: [
-      { type: "INCLUYE", item: "Guía profesional bilingüe" },
+      { type: "INCLUDED", item: "Guía profesional bilingüe" },
       {
-        type: "INCLUYE",
+        type: "INCLUDED",
         item: "Ingresos oficiales al Camino Inca y Machu Picchu",
       },
-      { type: "INCLUYE", item: "Tickets de tren (Expedition/Voyager)" },
-      { type: "INCLUYE", item: "Bus Consettur (subida y bajada)" },
-      { type: "INCLUYE", item: "1 noche de hotel en Aguas Calientes" },
-      { type: "INCLUYE", item: "Alimentación: 1 box lunch, 1 cena" },
+      { type: "INCLUDED", item: "Tickets de tren (Expedition/Voyager)" },
+      { type: "INCLUDED", item: "Bus Consettur (subida y bajada)" },
+      { type: "INCLUDED", item: "1 noche de hotel en Aguas Calientes" },
+      { type: "INCLUDED", item: "Alimentación: 1 box lunch, 1 cena" },
       {
-        type: "INCLUYE",
+        type: "INCLUDED",
         item: "Equipo de primeros auxilios y balón de oxígeno",
       },
-      { type: "NO_INCLUYE", item: "Primer desayuno (Día 1)" },
-      { type: "NO_INCLUYE", item: "Último almuerzo (Día 2)" },
-      { type: "NO_INCLUYE", item: "Bastones de trekking" },
-      { type: "NO_INCLUYE", item: "Bolsa de dormir" },
-      { type: "NO_INCLUYE", item: "Propinas" },
+      { type: "NOT_INCLUDED", item: "Primer desayuno (Día 1)" },
+      { type: "NOT_INCLUDED", item: "Último almuerzo (Día 2)" },
+      { type: "NOT_INCLUDED", item: "Bastones de trekking" },
+      { type: "NOT_INCLUDED", item: "Bolsa de dormir" },
+      { type: "NOT_INCLUDED", item: "Propinas" },
       {
-        type: "NO_INCLUYE",
+        type: "NOT_INCLUDED",
         item: "Entradas a montañas opcionales (Huayna Picchu / Machu Picchu Montaña)",
       },
     ],
@@ -181,31 +182,34 @@ const caminoInca: TourData[] = [
       { modality: "Privada", pricePerPerson: null, minPeople: 2 },
     ],
     inclusions: [
-      { type: "INCLUYE", item: "Sesión informativa previa (briefing)" },
-      { type: "INCLUYE", item: "Guía profesional oficial" },
-      { type: "INCLUYE", item: "Cocinero profesional y equipo de porteadores" },
+      { type: "INCLUDED", item: "Sesión informativa previa (briefing)" },
+      { type: "INCLUDED", item: "Guía profesional oficial" },
       {
-        type: "INCLUYE",
+        type: "INCLUDED",
+        item: "Cocinero profesional y equipo de porteadores",
+      },
+      {
+        type: "INCLUDED",
         item: "Tiendas de campaña impermeables, carpa comedor y cocina",
       },
-      { type: "INCLUYE", item: "Colchones inflables" },
+      { type: "INCLUDED", item: "Colchones inflables" },
       {
-        type: "INCLUYE",
+        type: "INCLUDED",
         item: "Alimentación completa: 3 desayunos, 3 almuerzos, 3 cenas y lonches diarios",
       },
-      { type: "INCLUYE", item: "Entradas al Camino Inca y Machu Picchu" },
+      { type: "INCLUDED", item: "Entradas al Camino Inca y Machu Picchu" },
       {
-        type: "INCLUYE",
+        type: "INCLUDED",
         item: "Tren de retorno y transporte privado al inicio",
       },
-      { type: "NO_INCLUYE", item: "Bolsa de dormir (sleeping bag)" },
-      { type: "NO_INCLUYE", item: "Bastones de trekking" },
+      { type: "NOT_INCLUDED", item: "Bolsa de dormir (sleeping bag)" },
+      { type: "NOT_INCLUDED", item: "Bastones de trekking" },
       {
-        type: "NO_INCLUYE",
+        type: "NOT_INCLUDED",
         item: "Primer desayuno (Día 1) y último almuerzo (Día 4)",
       },
       {
-        type: "NO_INCLUYE",
+        type: "NOT_INCLUDED",
         item: "Propinas para guías, cocineros y porteadores",
       },
     ],
@@ -274,14 +278,14 @@ const caminoInca: TourData[] = [
       { modality: "Privada", pricePerPerson: null, minPeople: 2 },
     ],
     inclusions: [
-      { type: "INCLUYE", item: "Guía experto y cocinero profesional" },
-      { type: "INCLUYE", item: "Equipo de porteadores" },
-      { type: "INCLUYE", item: "Carpas y equipo de campamento superior" },
-      { type: "INCLUYE", item: "5 días de alimentación completa" },
-      { type: "INCLUYE", item: "Entradas oficiales y tren de retorno" },
-      { type: "NO_INCLUYE", item: "Saco de dormir" },
-      { type: "NO_INCLUYE", item: "Bastones de trekking" },
-      { type: "NO_INCLUYE", item: "Propinas y gastos personales" },
+      { type: "INCLUDED", item: "Guía experto y cocinero profesional" },
+      { type: "INCLUDED", item: "Equipo de porteadores" },
+      { type: "INCLUDED", item: "Carpas y equipo de campamento superior" },
+      { type: "INCLUDED", item: "5 días de alimentación completa" },
+      { type: "INCLUDED", item: "Entradas oficiales y tren de retorno" },
+      { type: "NOT_INCLUDED", item: "Saco de dormir" },
+      { type: "NOT_INCLUDED", item: "Bastones de trekking" },
+      { type: "NOT_INCLUDED", item: "Propinas y gastos personales" },
     ],
   },
   {
@@ -345,24 +349,24 @@ const caminoInca: TourData[] = [
     ],
     options: [{ modality: "Privada", pricePerPerson: null, minPeople: 2 }],
     inclusions: [
-      { type: "INCLUYE", item: "Guía privado especializado de montaña" },
-      { type: "INCLUYE", item: "Arrieros y caballos (sección Salkantay)" },
-      { type: "INCLUYE", item: "Porteadores (sección Camino Inca)" },
-      { type: "INCLUYE", item: "Equipo completo de campamento de lujo" },
-      { type: "INCLUYE", item: "Alimentación completa durante los 7 días" },
+      { type: "INCLUDED", item: "Guía privado especializado de montaña" },
+      { type: "INCLUDED", item: "Arrieros y caballos (sección Salkantay)" },
+      { type: "INCLUDED", item: "Porteadores (sección Camino Inca)" },
+      { type: "INCLUDED", item: "Equipo completo de campamento de lujo" },
+      { type: "INCLUDED", item: "Alimentación completa durante los 7 días" },
       {
-        type: "INCLUYE",
+        type: "INCLUDED",
         item: "Todos los tickets de ingreso y tren de retorno",
       },
-      { type: "NO_INCLUYE", item: "Saco de dormir y bastones" },
-      { type: "NO_INCLUYE", item: "Seguro de viaje internacional" },
-      { type: "NO_INCLUYE", item: "Propinas" },
+      { type: "NOT_INCLUDED", item: "Saco de dormir y bastones" },
+      { type: "NOT_INCLUDED", item: "Seguro de viaje internacional" },
+      { type: "NOT_INCLUDED", item: "Propinas" },
     ],
   },
 ];
 
 // ---------------------------------------------------------
-// DATA: TREK SALKANTAY
+// DATA: SALKANTAY TREK
 // ---------------------------------------------------------
 const salkantay: TourData[] = [
   {
@@ -423,16 +427,22 @@ const salkantay: TourData[] = [
       { modality: "Privada", pricePerPerson: null, minPeople: 2 },
     ],
     inclusions: [
-      { type: "INCLUYE", item: "Transporte ida y vuelta desde Cusco" },
-      { type: "INCLUYE", item: "Guía profesional bilingüe" },
-      { type: "INCLUYE", item: "Cocinero y equipo de cocina" },
-      { type: "INCLUYE", item: "Arrieros y mulas de carga" },
-      { type: "INCLUYE", item: "4 desayunos, 4 almuerzos, 4 cenas" },
-      { type: "INCLUYE", item: "Entradas a la Laguna Humantay y Machu Picchu" },
-      { type: "INCLUYE", item: "Bus de bajada/subida y tren de retorno" },
-      { type: "NO_INCLUYE", item: "Saco de dormir y bastones" },
-      { type: "NO_INCLUYE", item: "Ingreso a las aguas termales de Cocalmayo" },
-      { type: "NO_INCLUYE", item: "Propinas y gastos personales" },
+      { type: "INCLUDED", item: "Transporte ida y vuelta desde Cusco" },
+      { type: "INCLUDED", item: "Guía profesional bilingüe" },
+      { type: "INCLUDED", item: "Cocinero y equipo de cocina" },
+      { type: "INCLUDED", item: "Arrieros y mulas de carga" },
+      { type: "INCLUDED", item: "4 desayunos, 4 almuerzos, 4 cenas" },
+      {
+        type: "INCLUDED",
+        item: "Entradas a la Laguna Humantay y Machu Picchu",
+      },
+      { type: "INCLUDED", item: "Bus de bajada/subida y tren de retorno" },
+      { type: "NOT_INCLUDED", item: "Saco de dormir y bastones" },
+      {
+        type: "NOT_INCLUDED",
+        item: "Ingreso a las aguas termales de Cocalmayo",
+      },
+      { type: "NOT_INCLUDED", item: "Propinas y gastos personales" },
     ],
   },
   {
@@ -478,13 +488,13 @@ const salkantay: TourData[] = [
       { modality: "Grupal", pricePerPerson: null, minPeople: 2, maxPeople: 12 },
     ],
     inclusions: [
-      { type: "INCLUYE", item: "Transporte, guía profesional y cocinero" },
-      { type: "INCLUYE", item: "Mulas de carga y equipo de campamento" },
-      { type: "INCLUYE", item: "Alimentación completa" },
-      { type: "INCLUYE", item: "Entradas a Machu Picchu y tren de retorno" },
-      { type: "NO_INCLUYE", item: "Saco de dormir y bastones" },
-      { type: "NO_INCLUYE", item: "Último almuerzo" },
-      { type: "NO_INCLUYE", item: "Propinas" },
+      { type: "INCLUDED", item: "Transporte, guía profesional y cocinero" },
+      { type: "INCLUDED", item: "Mulas de carga y equipo de campamento" },
+      { type: "INCLUDED", item: "Alimentación completa" },
+      { type: "INCLUDED", item: "Entradas a Machu Picchu y tren de retorno" },
+      { type: "NOT_INCLUDED", item: "Saco de dormir y bastones" },
+      { type: "NOT_INCLUDED", item: "Último almuerzo" },
+      { type: "NOT_INCLUDED", item: "Propinas" },
     ],
   },
 ];
@@ -537,23 +547,23 @@ const incaJungle: TourData[] = [
       { modality: "Grupal", pricePerPerson: null, minPeople: 2, maxPeople: 12 },
     ],
     inclusions: [
-      { type: "INCLUYE", item: "Guía profesional de turismo de aventura" },
+      { type: "INCLUDED", item: "Guía profesional de turismo de aventura" },
       {
-        type: "INCLUYE",
+        type: "INCLUDED",
         item: "Bicicletas de montaña con equipo de seguridad completo",
       },
-      { type: "INCLUYE", item: "Alojamiento en hostales seleccionados" },
+      { type: "INCLUDED", item: "Alojamiento en hostales seleccionados" },
       {
-        type: "INCLUYE",
+        type: "INCLUDED",
         item: "Alimentación: 3 desayunos, 3 almuerzos, 3 cenas",
       },
-      { type: "INCLUYE", item: "Entradas a Machu Picchu y tren de retorno" },
-      { type: "NO_INCLUYE", item: "Primer desayuno y último almuerzo" },
+      { type: "INCLUDED", item: "Entradas a Machu Picchu y tren de retorno" },
+      { type: "NOT_INCLUDED", item: "Primer desayuno y último almuerzo" },
       {
-        type: "NO_INCLUYE",
+        type: "NOT_INCLUDED",
         item: "Actividades opcionales de aventura (canotaje o tirolesa)",
       },
-      { type: "NO_INCLUYE", item: "Bebidas extras y propinas" },
+      { type: "NOT_INCLUDED", item: "Bebidas extras y propinas" },
     ],
   },
   {
@@ -591,20 +601,20 @@ const incaJungle: TourData[] = [
       { modality: "Grupal", pricePerPerson: null, minPeople: 2, maxPeople: 12 },
     ],
     inclusions: [
-      { type: "INCLUYE", item: "Guía de aventura" },
-      { type: "INCLUYE", item: "Bicicletas y equipos de protección" },
-      { type: "INCLUYE", item: "Hospedaje en hotel básico" },
-      { type: "INCLUYE", item: "Alimentación completa según programa" },
-      { type: "INCLUYE", item: "Ingresos a Machu Picchu y tren de retorno" },
-      { type: "NO_INCLUYE", item: "Almuerzo y cena del último día" },
-      { type: "NO_INCLUYE", item: "Deportes de aventura opcionales" },
-      { type: "NO_INCLUYE", item: "Bolsa de dormir y propinas" },
+      { type: "INCLUDED", item: "Guía de aventura" },
+      { type: "INCLUDED", item: "Bicicletas y equipos de protección" },
+      { type: "INCLUDED", item: "Hospedaje en hotel básico" },
+      { type: "INCLUDED", item: "Alimentación completa según programa" },
+      { type: "INCLUDED", item: "Ingresos a Machu Picchu y tren de retorno" },
+      { type: "NOT_INCLUDED", item: "Almuerzo y cena del último día" },
+      { type: "NOT_INCLUDED", item: "Deportes de aventura opcionales" },
+      { type: "NOT_INCLUDED", item: "Bolsa de dormir y propinas" },
     ],
   },
 ];
 
 // ---------------------------------------------------------
-// DATA: CUSCO & VALLE SAGRADO (7 tours, precios confirmados)
+// DATA: CUSCO & SACRED VALLEY (7 tours, confirmed prices)
 // ---------------------------------------------------------
 const cuscoValleSagrado: TourData[] = [
   {
@@ -621,14 +631,14 @@ const cuscoValleSagrado: TourData[] = [
       { modality: "Privada", pricePerPerson: 80, minPeople: 2 },
     ],
     inclusions: [
-      { type: "INCLUYE", item: "Guía profesional" },
+      { type: "INCLUDED", item: "Guía profesional" },
       {
-        type: "INCLUYE",
+        type: "INCLUDED",
         item: "Transporte turístico (compartido en Grupal, privado en Privada)",
       },
-      { type: "NO_INCLUYE", item: "Entradas / Boleto Turístico" },
-      { type: "NO_INCLUYE", item: "Alimentación" },
-      { type: "NO_INCLUYE", item: "Propinas" },
+      { type: "NOT_INCLUDED", item: "Entradas / Boleto Turístico" },
+      { type: "NOT_INCLUDED", item: "Alimentación" },
+      { type: "NOT_INCLUDED", item: "Propinas" },
     ],
   },
   {
@@ -644,12 +654,12 @@ const cuscoValleSagrado: TourData[] = [
     options: [{ modality: "Privada", pricePerPerson: 30, minPeople: 2 }],
     inclusions: [
       {
-        type: "INCLUYE",
+        type: "INCLUDED",
         item: "Guía profesional exclusivo para el recorrido a pie",
       },
-      { type: "NO_INCLUYE", item: "Ingresos a museos opcionales" },
-      { type: "NO_INCLUYE", item: "Alimentación" },
-      { type: "NO_INCLUYE", item: "Propinas" },
+      { type: "NOT_INCLUDED", item: "Ingresos a museos opcionales" },
+      { type: "NOT_INCLUDED", item: "Alimentación" },
+      { type: "NOT_INCLUDED", item: "Propinas" },
     ],
   },
   {
@@ -667,17 +677,17 @@ const cuscoValleSagrado: TourData[] = [
       { modality: "Privada", pricePerPerson: 100, minPeople: 2 },
     ],
     inclusions: [
-      { type: "INCLUYE", item: "Guía profesional" },
+      { type: "INCLUDED", item: "Guía profesional" },
       {
-        type: "INCLUYE",
+        type: "INCLUDED",
         item: "Transporte turístico (compartido en Grupal, privado en Privada)",
       },
       {
-        type: "INCLUYE",
+        type: "INCLUDED",
         item: "Almuerzo buffet en Urubamba (solo modalidad Grupal)",
       },
-      { type: "NO_INCLUYE", item: "Entradas / Boleto Turístico" },
-      { type: "NO_INCLUYE", item: "Propinas" },
+      { type: "NOT_INCLUDED", item: "Entradas / Boleto Turístico" },
+      { type: "NOT_INCLUDED", item: "Propinas" },
     ],
   },
   {
@@ -695,15 +705,15 @@ const cuscoValleSagrado: TourData[] = [
       { modality: "Privada", pricePerPerson: 80, minPeople: 2 },
     ],
     inclusions: [
-      { type: "INCLUYE", item: "Guía profesional" },
-      { type: "INCLUYE", item: "Transporte turístico hasta Ollantaytambo" },
+      { type: "INCLUDED", item: "Guía profesional" },
+      { type: "INCLUDED", item: "Transporte turístico hasta Ollantaytambo" },
       {
-        type: "INCLUYE",
+        type: "INCLUDED",
         item: "Almuerzo buffet en Urubamba (solo modalidad Grupal)",
       },
-      { type: "NO_INCLUYE", item: "Boleto de tren a Aguas Calientes" },
-      { type: "NO_INCLUYE", item: "Entradas / Boleto Turístico" },
-      { type: "NO_INCLUYE", item: "Propinas" },
+      { type: "NOT_INCLUDED", item: "Boleto de tren a Aguas Calientes" },
+      { type: "NOT_INCLUDED", item: "Entradas / Boleto Turístico" },
+      { type: "NOT_INCLUDED", item: "Propinas" },
     ],
   },
   {
@@ -721,15 +731,15 @@ const cuscoValleSagrado: TourData[] = [
       { modality: "Privada", pricePerPerson: 80, minPeople: 2 },
     ],
     inclusions: [
-      { type: "INCLUYE", item: "Guía profesional" },
+      { type: "INCLUDED", item: "Guía profesional" },
       {
-        type: "INCLUYE",
+        type: "INCLUDED",
         item: "Transporte turístico (compartido en Grupal, privado en Privada)",
       },
-      { type: "NO_INCLUYE", item: "Entradas / Boleto Turístico" },
-      { type: "NO_INCLUYE", item: "Ingreso a las Salineras de Maras" },
-      { type: "NO_INCLUYE", item: "Alimentación" },
-      { type: "NO_INCLUYE", item: "Propinas" },
+      { type: "NOT_INCLUDED", item: "Entradas / Boleto Turístico" },
+      { type: "NOT_INCLUDED", item: "Ingreso a las Salineras de Maras" },
+      { type: "NOT_INCLUDED", item: "Alimentación" },
+      { type: "NOT_INCLUDED", item: "Propinas" },
     ],
   },
   {
@@ -743,12 +753,12 @@ const cuscoValleSagrado: TourData[] = [
     published: true,
     options: [{ modality: "Privada", pricePerPerson: 100, minPeople: 2 }],
     inclusions: [
-      { type: "INCLUYE", item: "Guía profesional exclusivo" },
-      { type: "INCLUYE", item: "Transporte privado" },
-      { type: "INCLUYE", item: "Alimentación local (comida)" },
-      { type: "INCLUYE", item: "Vivencia cultural en la comunidad" },
-      { type: "NO_INCLUYE", item: "Gastos personales" },
-      { type: "NO_INCLUYE", item: "Propinas" },
+      { type: "INCLUDED", item: "Guía profesional exclusivo" },
+      { type: "INCLUDED", item: "Transporte privado" },
+      { type: "INCLUDED", item: "Alimentación local (comida)" },
+      { type: "INCLUDED", item: "Vivencia cultural en la comunidad" },
+      { type: "NOT_INCLUDED", item: "Gastos personales" },
+      { type: "NOT_INCLUDED", item: "Propinas" },
     ],
   },
   {
@@ -762,17 +772,17 @@ const cuscoValleSagrado: TourData[] = [
     published: true,
     options: [{ modality: "Privada", pricePerPerson: 80, minPeople: 2 }],
     inclusions: [
-      { type: "INCLUYE", item: "Transporte privado" },
-      { type: "INCLUYE", item: "Equipo completo de seguridad" },
-      { type: "INCLUYE", item: "Guía instructor especializado" },
-      { type: "NO_INCLUYE", item: "Gastos personales" },
-      { type: "NO_INCLUYE", item: "Propinas" },
+      { type: "INCLUDED", item: "Transporte privado" },
+      { type: "INCLUDED", item: "Equipo completo de seguridad" },
+      { type: "INCLUDED", item: "Guía instructor especializado" },
+      { type: "NOT_INCLUDED", item: "Gastos personales" },
+      { type: "NOT_INCLUDED", item: "Propinas" },
     ],
   },
 ];
 
 // ---------------------------------------------------------
-// CONSOLIDADO
+// CONSOLIDATED
 // ---------------------------------------------------------
 const allTours: TourData[] = [
   ...caminoInca,
@@ -785,7 +795,7 @@ const allTours: TourData[] = [
 // SEED LOGIC
 // ---------------------------------------------------------
 async function seedTour(data: TourData) {
-  // Limpia el tour si ya existía (permite re-correr el seed sin duplicar)
+  // Clears the tour if it already existed (allows re-running the seed without duplicating)
   await prisma.tour.deleteMany({ where: { slug: data.slug } });
 
   await prisma.tour.create({
@@ -802,6 +812,7 @@ async function seedTour(data: TourData) {
       maxGroupSize: data.maxGroupSize,
       guideLanguages: data.guideLanguages,
       placesVisited: data.placesVisited,
+      imageUrl: data.imageUrl,
       published: data.published,
       featured: data.featured ?? false,
       itinerary: data.itinerary

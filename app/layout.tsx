@@ -5,6 +5,7 @@ import "./globals.css";
 import Nav from "./components/Nav";
 import Footer from "./components/Footer";
 import { LanguageProvider } from "./context/LanguageContext";
+import { getNavToursByCategory } from "./lib/tours";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -22,18 +23,27 @@ export const metadata: Metadata = {
   description: "Discover Cusco, Machu Picchu and Peru with Urpi Wayra Tours.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Consulta Prisma UNA VEZ en el servidor para armar el menú de navegación.
+  // Se ejecuta en cada request (layout no está cacheado por defecto en App Router
+  // salvo que agregues `export const revalidate = ...` más adelante).
+  const toursByCategory = await getNavToursByCategory();
+
   return (
     <html lang="es">
       <body
         className={`${inter.variable} ${cormorant.variable} font-sans antialiased`}
       >
         <LanguageProvider>
-          <Nav />
+          <Nav
+            caminoIncaTours={toursByCategory["Camino Inca"] ?? []}
+            altTreksTours={toursByCategory["Treks Alternativos"] ?? []}
+            sacredValleyTours={toursByCategory["Cusco & Valle Sagrado"] ?? []}
+          />
           {children}
           <Footer />
         </LanguageProvider>

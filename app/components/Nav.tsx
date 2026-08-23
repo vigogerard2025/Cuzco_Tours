@@ -106,7 +106,18 @@ const SOCIALS = [
   { icon: YoutubeIcon, href: "https://youtube.com", label: "YouTube" },
 ];
 
-export function Nav() {
+interface NavProps {
+  /** Tours reales publicados, agrupados por categoría (vienen de Prisma vía layout.tsx) */
+  caminoIncaTours?: TourLink[];
+  altTreksTours?: TourLink[];
+  sacredValleyTours?: TourLink[];
+}
+
+export function Nav({
+  caminoIncaTours = [],
+  altTreksTours = [],
+  sacredValleyTours = [],
+}: NavProps) {
   const { language, setLanguage, t } = useLanguage();
 
   const [openMenu, setOpenMenu] = useState<string | null>(null);
@@ -143,26 +154,15 @@ export function Nav() {
     {
       label: t("catIncaTrail"),
       href: "/tours/camino-inca",
-      groups: [
-        {
-          title: t("grpClassicIncaTrail"),
-          links: [
-            {
-              label: "Walking tour of Cusco",
-              href: "/tours/camino-inca/cuzco-a-pie",
-            },
-            {
-              label: "Traditional Archaeological City Tour (Half-Day)",
-              href: "/tours/camino-inca/traditional-tour",
-            },
-            {
-              label:
-                "VIP Sacred Valley Tour (Full Day – Starting in Chinchero) ",
-              href: "/tours/camino-inca/sacred-valley",
-            },
-          ],
-        },
-      ],
+      groups:
+        caminoIncaTours.length > 0
+          ? [
+              {
+                title: t("grpClassicIncaTrail"),
+                links: caminoIncaTours,
+              },
+            ]
+          : [],
     },
     {
       label: t("catAltTreks"),
@@ -170,71 +170,30 @@ export function Nav() {
       groups: [
         {
           title: t("grpSalkantay"),
-          links: [
-            {
-              label: "Salkantay 5 Días — Grupal",
-              href: "/tours/salkantay-5-dias-grupal",
-            },
-            {
-              label: "Salkantay 4 Días — Grupal",
-              href: "/tours/salkantay-4-dias-grupal",
-            },
-          ],
+          links: altTreksTours.filter((tour) =>
+            tour.label.toLowerCase().includes("salkantay"),
+          ),
         },
         {
           title: t("grpJungleColors"),
-          links: [
-            { label: "Inca Jungle 4 Días", href: "/tours/inca-jungle-4-dias" },
-            {
-              label: "Montaña de Colores — Full Day",
-              href: "/tours/montana-de-colores-full-day",
-            },
-          ],
+          links: altTreksTours.filter((tour) =>
+            tour.label.toLowerCase().includes("jungle"),
+          ),
         },
-        {
-          title: t("grpLaresChoq"),
-          links: [
-            { label: "Lares 4 Días", href: "/tours/lares-4-dias" },
-            {
-              label: "Choquequirao 5 Días",
-              href: "/tours/choquequirao-5-dias",
-            },
-          ],
-        },
-      ],
+      ].filter((group) => group.links.length > 0),
     },
     {
       label: t("catSacredValley"),
       href: "/tours/cusco-valle-sagrado",
-      groups: [
-        {
-          title: t("grpDayTours"),
-          links: [
-            { label: "City Tour Cusco", href: "/tours/city-tour-cusco" },
-            {
-              label: "Valle Sagrado — Privado",
-              href: "/tours/valle-sagrado-privado",
-            },
-            {
-              label: "Maras, Moray y Chinchero",
-              href: "/tours/maras-moray-chinchero",
-            },
-          ],
-        },
-        {
-          title: t("grpMultiDay"),
-          links: [
-            {
-              label: "Cusco Esencial 6 Días",
-              href: "/tours/cusco-esencial-6-dias",
-            },
-            {
-              label: "Cusco y Machu Picchu 5 Días",
-              href: "/tours/cusco-machu-picchu-5-dias",
-            },
-          ],
-        },
-      ],
+      groups:
+        sacredValleyTours.length > 0
+          ? [
+              {
+                title: t("grpDayTours"),
+                links: sacredValleyTours,
+              },
+            ]
+          : [],
     },
     {
       label: t("catPackages"),
@@ -487,8 +446,8 @@ export function Nav() {
                   />
                 </Link>
 
-                {/* Dropdown */}
-                {openMenu === category.label && (
+                {/* Dropdown — solo se abre si la categoría tiene tours reales */}
+                {openMenu === category.label && category.groups.length > 0 && (
                   <div className="absolute left-0 top-full z-50 flex w-[640px] gap-8 rounded-xl border border-stone-100 bg-white p-6 shadow-xl">
                     {category.groups.map((group) => (
                       <div key={group.title} className="flex-1">
@@ -587,30 +546,31 @@ export function Nav() {
                       />
                     </button>
 
-                    {mobileSubmenu === category.label && (
-                      <div className="space-y-4 pb-3 pl-2">
-                        {category.groups.map((group) => (
-                          <div key={group.title}>
-                            <p className="mb-1.5 font-fraunces text-xs font-semibold text-emerald-700">
-                              {group.title}
-                            </p>
-                            <ul className="space-y-1.5">
-                              {group.links.map((link) => (
-                                <li key={link.href}>
-                                  <Link
-                                    href={link.href}
-                                    className="text-sm text-stone-600"
-                                    onClick={() => setMobileOpen(false)}
-                                  >
-                                    {link.label}
-                                  </Link>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        ))}
-                      </div>
-                    )}
+                    {mobileSubmenu === category.label &&
+                      category.groups.length > 0 && (
+                        <div className="space-y-4 pb-3 pl-2">
+                          {category.groups.map((group) => (
+                            <div key={group.title}>
+                              <p className="mb-1.5 font-fraunces text-xs font-semibold text-emerald-700">
+                                {group.title}
+                              </p>
+                              <ul className="space-y-1.5">
+                                {group.links.map((link) => (
+                                  <li key={link.href}>
+                                    <Link
+                                      href={link.href}
+                                      className="text-sm text-stone-600"
+                                      onClick={() => setMobileOpen(false)}
+                                    >
+                                      {link.label}
+                                    </Link>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                   </li>
                 ))}
 
