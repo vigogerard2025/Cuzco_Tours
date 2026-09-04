@@ -1,182 +1,81 @@
-// =========================================================
-// PRISMA SCHEMA - Urpi Wayra Adventures
-// =========================================================
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
-// ---------------------------------------------------------
-// TOUR: main entity (e.g. "Classic 4D Inca Trail",
-// "Cusco City Tour", "Sacred Valley VIP")
-// ---------------------------------------------------------
 model Tour {
-  id               String  @id @default(cuid())
-  slug             String  @unique
-  name             String
-  category         String  // "Inca Trail" | "Cusco & Sacred Valley" | "Alternative Treks" | etc.
+  id           Int      @id @default(autoincrement())
+  title        String
+  slug         String   @unique
+  description  String
+  duration     String
+  difficulty   String
+  maxAltitude  Int?
+  maxGroupSize Int?
+  languages    String
+  category     String   // <-- NUEVO: "camino-inca" | "cusco-valle-sagrado" | "treks-alternativos"
+  price        Float?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
-  // Marketing / description
-  shortDescription String? @db.Text
-  description      String? @db.Text
-
-  // Trek/tour specs (mostly applies to multi-day treks)
-  durationDays     Int
-  durationNights   Int?
-  difficulty       String?  // "Moderate to challenging", "Easy", etc.
-  maxAltitudeM     Int?     // max altitude in meters above sea level
-  minGroupSize     Int?
-  maxGroupSize     Int?
-  guideLanguages   String?  // "English and Spanish"
-
-  // Places visited (for city tours / valley tours)
-  placesVisited    String?  @db.Text
-
-  // Cover image, served from /public (e.g. "/images/tours/salkantay-5-dias/01.jpg")
-  imageUrl         String?
-
-  published        Boolean  @default(false)
-  featured         Boolean  @default(false)
-
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-
-  itinerary        TourItinerary[]
-  options          TourOption[]
-  inclusions       TourInclusion[]
-  bookings         Booking[]
-
-  @@index([category])
-  @@index([published])
+  prices       TourPrice[]
+  itineraries  TourItinerary[]
+  includes     TourInclude[]
+  excludes     TourExclude[]
+  images       TourImage[]
 }
 
-// ---------------------------------------------------------
-// TOUR ITINERARY: day-by-day breakdown (multi-day tours only)
-// ---------------------------------------------------------
+
+model TourPrice {
+  id        Int    @id @default(autoincrement())
+  tourId    Int
+  type      String
+  price     Float
+  minPeople Int?
+
+  tour      Tour   @relation(fields: [tourId], references: [id], onDelete: Cascade)
+}
+
 model TourItinerary {
-  id                String  @id @default(cuid())
-  tourId            String
-  tour              Tour    @relation(fields: [tourId], references: [id], onDelete: Cascade)
+  id             Int    @id @default(autoincrement())
+  tourId        Int
+  day            Int
+  title          String
+  description    String
+  distance       String?
+  hikingTime     String?
+  accommodation String?
 
-  dayNumber         Int
-  title             String
-  route             String? // "Wayllabamba → Warmiwañusca → Pacaymayo"
-  description       String  @db.Text
+  tour           Tour   @relation(fields: [tourId], references: [id], onDelete: Cascade)
 
-  distanceKm        Float?
-  durationText      String? // free text, e.g. "6-7 hours"
-  altitudeM         Int?
-
-  accommodationType String? // "Campsite" | "Hotel"
-  accommodationName String?
-
-  createdAt         DateTime @default(now())
-
-  @@unique([tourId, dayNumber])
+  @@unique([tourId, day])
 }
 
-// ---------------------------------------------------------
-// TOUR OPTION: modality and price (Group / Private)
-// A tour can have one or several options
-// ---------------------------------------------------------
-model TourOption {
-  id             String   @id @default(cuid())
-  tourId         String
-  tour           Tour     @relation(fields: [tourId], references: [id], onDelete: Cascade)
+model TourInclude {
+  id      Int    @id @default(autoincrement())
+  tourId  Int
+  item    String
 
-  modality       String   // "Group" | "Private"
-  pricePerPerson Decimal? @db.Decimal(10, 2) // null = "Contact for pricing"
-  currency       String   @default("USD")
-  minPeople      Int?     @default(1)
-  maxPeople      Int?
-
-  active         Boolean  @default(true)
-
-  bookings       Booking[]
-
-  @@unique([tourId, modality])
+  tour    Tour   @relation(fields: [tourId], references: [id], onDelete: Cascade)
 }
 
-// ---------------------------------------------------------
-// TOUR INCLUSION: what's included / not included
-// ---------------------------------------------------------
-model TourInclusion {
-  id     String        @id @default(cuid())
-  tourId String
-  tour   Tour          @relation(fields: [tourId], references: [id], onDelete: Cascade)
+model TourExclude {
+  id      Int    @id @default(autoincrement())
+  tourId  Int
+  item    String
 
-  type   InclusionType
-  item   String        @db.Text
-  order  Int           @default(0)
-
-  @@index([tourId, type])
+  tour    Tour   @relation(fields: [tourId], references: [id], onDelete: Cascade)
 }
 
-enum InclusionType {
-  INCLUDED
-  NOT_INCLUDED
-}
+model TourImage {
+  id      Int    @id @default(autoincrement())
+  tourId  Int
+  url     String
+  alt     String?
 
-// ---------------------------------------------------------
-// BOOKING: a customer's reservation
-// ---------------------------------------------------------
-model Booking {
-  id             String        @id @default(cuid())
-  tourId         String
-  tour           Tour          @relation(fields: [tourId], references: [id])
-  tourOptionId   String
-  tourOption     TourOption    @relation(fields: [tourOptionId], references: [id])
-
-  customerName   String
-  customerEmail  String
-  customerPhone  String?
-
-  numberOfPeople Int
-  travelDate     DateTime
-  totalAmount    Decimal       @db.Decimal(10, 2)
-  currency       String        @default("USD")
-
-  status         BookingStatus @default(PENDING)
-
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
-
-  payment        Payment?
-
-  @@index([tourId])
-  @@index([status])
-}
-
-enum BookingStatus {
-  PENDING
-  CONFIRMED
-  CANCELLED
-  COMPLETED
-}
-
-// ---------------------------------------------------------
-// PAYMENT: Mercado Pago Checkout Pro payment record
-// ---------------------------------------------------------
-model Payment {
-  id              String   @id @default(cuid())
-  bookingId       String   @unique
-  booking         Booking  @relation(fields: [bookingId], references: [id])
-
-  mercadoPagoId   String   @unique // payment_id returned by Mercado Pago
-  preferenceId    String?
-  status          String   // "approved" | "pending" | "rejected", etc. (from MP)
-  statusDetail    String?
-  amount          Decimal  @db.Decimal(10, 2)
-  currency        String   @default("USD")
-
-  webhookVerified Boolean  @default(false)
-
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  tour    Tour   @relation(fields: [tourId], references: [id], onDelete: Cascade)
 }

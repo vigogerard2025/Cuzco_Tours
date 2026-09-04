@@ -3,6 +3,8 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --font-body: "Manrope", sans-serif;
+  --font-heading: "Cormorant Garamond", serif;
 }
 
 @theme inline {
@@ -22,5 +24,16 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: "Bitcount Single", system-ui;
+  font-family: var(--font-body);
+}
+.font-sans {
+  font-family: var(--font-body);
+}
+
+.font-heading {
+  font-family: var(--font-heading);
+}
+
+.font-fraunces {
+  font-family: var(--font-heading);
 }

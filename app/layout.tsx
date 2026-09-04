@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
-import { Inter, Cormorant_Garamond } from "next/font/google";
+
+import { Manrope, Cormorant_Garamond } from "next/font/google";
 
 import "./globals.css";
+
 import Nav from "./components/Nav";
 import Footer from "./components/Footer";
-import { LanguageProvider } from "./context/LanguageContext";
-import { getNavToursByCategory } from "./lib/tours";
 
-const inter = Inter({
+import { LanguageProvider } from "./context/LanguageContext";
+
+const manrope = Manrope({
   subsets: ["latin"],
   variable: "--font-body",
 });
@@ -28,22 +30,13 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Consulta Prisma UNA VEZ en el servidor para armar el menú de navegación.
-  // Se ejecuta en cada request (layout no está cacheado por defecto en App Router
-  // salvo que agregues `export const revalidate = ...` más adelante).
-  const toursByCategory = await getNavToursByCategory();
-
   return (
     <html lang="es">
       <body
-        className={`${inter.variable} ${cormorant.variable} font-sans antialiased`}
+        className={`${manrope.variable} ${cormorant.variable} font-sans antialiased`}
       >
         <LanguageProvider>
-          <Nav
-            caminoIncaTours={toursByCategory["Camino Inca"] ?? []}
-            altTreksTours={toursByCategory["Treks Alternativos"] ?? []}
-            sacredValleyTours={toursByCategory["Cusco & Valle Sagrado"] ?? []}
-          />
+          <Nav />
           {children}
           <Footer />
         </LanguageProvider>

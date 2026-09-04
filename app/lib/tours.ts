@@ -1,173 +1,52 @@
-// =========================================================
-// app/lib/tours.ts
-// Capa de datos: consultas a Prisma para poblar el homepage
-// y otras páginas con datos reales de Neon (reemplaza los
-// arrays *_FIXED hardcodeados en page.tsx).
-// =========================================================
+// Reemplaza tu función getNavTours en app/lib/tours.ts por esta versión
+// (o agrégala si aún no existe — no toques el resto del archivo)
 
-import { prisma } from "./prisma";
+import { prisma } from "./prisma"; // ajusta esta ruta si tu singleton está en otro lado
 
-// ---------------------------------------------------------
-// Forma de datos que consume <TourCard /> / <TourCardCarousel />
-// (debe coincidir con TourCardProps en app/components/Tourcard.tsx)
-// ---------------------------------------------------------
-export interface TourCardData {
-  href: string;
-  imageSrc: string;
-  imageAlt: string;
-  badge?: string;
-  title: string;
-  difficulty?: string;
-  groupSize?: string;
-  priceFrom: number;
-}
-
-// ---------------------------------------------------------
-// Consulta base reutilizada por getHomepageCategoryTours() y
-// getHomepageTopTours(). El tipo TourWithOptions se infiere
-// automáticamente de esta función (más robusto entre versiones
-// de Prisma que construir el tipo a mano con Prisma.TourGetPayload).
-// ---------------------------------------------------------
-async function findToursWithOptions(
-  where: { category?: string; published: boolean } | Record<string, unknown>,
-  limit: number,
-) {
-  return prisma.tour.findMany({
-    where,
-    orderBy: [{ featured: "desc" }, { createdAt: "asc" }],
-    take: limit,
-    include: { options: true },
-  });
-}
-
-type TourWithOptions = Awaited<ReturnType<typeof findToursWithOptions>>[number];
-
-// ---------------------------------------------------------
-// Convierte un Tour de Prisma a la forma que espera TourCard.
-// Devuelve null si el tour no tiene ningún precio confirmado
-// todavía (para no romper la tarjeta con "Desde USD undefined").
-// ---------------------------------------------------------
-function toCardData(tour: TourWithOptions): TourCardData | null {
-  const precios = tour.options
-    .filter((o) => o.active && o.pricePerPerson !== null)
-    .map((o) => o.pricePerPerson!.toNumber());
-
-  if (precios.length === 0) return null;
-
-  const priceFrom = Math.min(...precios);
-
-  const badge =
-    tour.durationDays === 1
-      ? "Full Day"
-      : tour.durationNights
-        ? `${tour.durationDays}D / ${tour.durationNights}N`
-        : `${tour.durationDays}D`;
-
-  const groupSize =
-    tour.minGroupSize && tour.maxGroupSize
-      ? `${tour.minGroupSize}-${tour.maxGroupSize}`
-      : undefined;
-
-  return {
-    href: `/tours/${tour.slug}`,
-    // Usa la imagen real del tour; si aún no se asignó, cae a un placeholder.
-    imageSrc: tour.imageUrl ?? "/images/placeholder-tour.jpg",
-    imageAlt: tour.name,
-    badge,
-    title: tour.name,
-    difficulty: tour.difficulty ?? undefined,
-    groupSize,
-    priceFrom,
-  };
-}
-
-// ---------------------------------------------------------
-// Tours publicados de una categoría específica (ej: "Camino Inca")
-// Útil para el carrusel de Camino Inca del homepage.
-// ---------------------------------------------------------
-export async function getHomepageCategoryTours(
-  category: string,
-  limit = 4,
-): Promise<TourCardData[]> {
-  const tours = await findToursWithOptions(
-    { category, published: true },
-    limit,
-  );
-
-  return tours.map(toCardData).filter((t): t is TourCardData => t !== null);
-}
-
-// ---------------------------------------------------------
-// Tours publicados destacados de CUALQUIER categoría, excluyendo
-// una en particular. Útil para "Top Tours Recomendados".
-// ---------------------------------------------------------
-export async function getHomepageTopTours(
-  excludeCategory?: string,
-  limit = 4,
-): Promise<TourCardData[]> {
-  const tours = await findToursWithOptions(
-    {
-      published: true,
-      ...(excludeCategory ? { category: { not: excludeCategory } } : {}),
-    },
-    limit,
-  );
-
-  return tours.map(toCardData).filter((t): t is TourCardData => t !== null);
-}
-
-// ---------------------------------------------------------
-// Tours publicados agrupados por categoría, para el menú Nav.
-// Devuelve algo como:
-//   { "Camino Inca": [{ label, href }, ...], "Treks Alternativos": [...] }
-// ---------------------------------------------------------
-export interface NavTourLink {
+export type NavCategoryData = {
+  key: string;
   label: string;
-  href: string;
-}
+  tours: { title: string; slug: string }[];
+};
 
-export async function getNavToursByCategory(): Promise<
-  Record<string, NavTourLink[]>
-> {
+// Etiquetas y orden de despliegue de cada categoría en el Nav.
+// Agrega aquí nuevas categorías cuando siembres tours con un category distinto.
+const CATEGORY_LABELS: Record<string, string> = {
+  "camino-inca": "Inca Trail",
+  "cusco-valle-sagrado": "Cusco & Sacred Valley",
+  "treks-alternativos": "Alternative Treks",
+};
+
+const CATEGORY_ORDER = [
+  "camino-inca",
+  "cusco-valle-sagrado",
+  "treks-alternativos",
+];
+
+export async function getNavTours(): Promise<NavCategoryData[]> {
   const tours = await prisma.tour.findMany({
-    where: { published: true },
-    orderBy: [{ category: "asc" }, { durationDays: "asc" }],
-    select: { name: true, slug: true, category: true },
-  });
-
-  const grouped: Record<string, NavTourLink[]> = {};
-  for (const tour of tours) {
-    if (!grouped[tour.category]) grouped[tour.category] = [];
-    grouped[tour.category].push({
-      label: tour.name,
-      href: `/tours/${tour.slug}`,
-    });
-  }
-  return grouped;
-}
-
-// ---------------------------------------------------------
-// Un tour completo por slug (para la futura página [slug])
-// ---------------------------------------------------------
-export async function getTourBySlug(slug: string) {
-  return prisma.tour.findUnique({
-    where: { slug, published: true },
-    include: {
-      options: { where: { active: true } },
-      itinerary: { orderBy: { dayNumber: "asc" } },
-      inclusions: { orderBy: { order: "asc" } },
+    select: {
+      title: true,
+      slug: true,
+      category: true,
+    },
+    orderBy: {
+      title: "asc",
     },
   });
-}
 
-// ---------------------------------------------------------
-// Todos los tours publicados (para /tours y para generar
-// los params estáticos de /tours/[slug])
-// ---------------------------------------------------------
-export async function getAllPublishedTours() {
-  return prisma.tour.findMany({
-    where: { published: true },
-    orderBy: [{ category: "asc" }, { featured: "desc" }],
-    include: { options: { where: { active: true } } },
-  });
+  const grouped = new Map<string, { title: string; slug: string }[]>();
+  for (const tour of tours) {
+    const list = grouped.get(tour.category) ?? [];
+    list.push({ title: tour.title, slug: tour.slug });
+    grouped.set(tour.category, list);
+  }
+
+  // Solo devuelve categorías que realmente tienen tours sembrados,
+  // en el orden definido arriba (evita dropdowns vacíos en el Nav).
+  return CATEGORY_ORDER.filter((key) => grouped.has(key)).map((key) => ({
+    key,
+    label: CATEGORY_LABELS[key] ?? key,
+    tours: grouped.get(key)!,
+  }));
 }
