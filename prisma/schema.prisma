@@ -17,7 +17,7 @@ model Tour {
   maxAltitude  Int?
   maxGroupSize Int?
   languages    String
-  category     String   // <-- NUEVO: "camino-inca" | "cusco-valle-sagrado" | "treks-alternativos"
+  category     String
   price        Float?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
@@ -31,14 +31,16 @@ model Tour {
 
 
 model TourPrice {
-  id        Int    @id @default(autoincrement())
-  tourId    Int
-  type      String
-  price     Float
-  minPeople Int?
+  id         Int     @id @default(autoincrement())
+  tourId     Int
+  type       String
+  price      Float
+  minPeople  Int?
+  bestSeller Boolean @default(false)
 
-  tour      Tour   @relation(fields: [tourId], references: [id], onDelete: Cascade)
+  tour       Tour    @relation(fields: [tourId], references: [id], onDelete: Cascade)
 }
+
 
 model TourItinerary {
   id             Int    @id @default(autoincrement())

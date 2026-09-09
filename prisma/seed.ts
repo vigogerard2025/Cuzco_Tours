@@ -15,7 +15,12 @@ type TourSeed = {
     category: string;
     price?: number | null;
   };
-  prices?: { type: string; price: number; minPeople?: number | null }[];
+  prices?: {
+    type: string;
+    price: number;
+    minPeople?: number | null;
+    bestSeller?: boolean;
+  }[];
   itinerary?: {
     day: number;
     title: string;
@@ -87,8 +92,16 @@ const incaTrailTours: TourSeed[] = [
       maxGroupSize: 12,
       languages: "English and Spanish",
       category: "camino-inca",
-      price: 1250,
+      price: null,
     },
+    prices: [
+      { type: "Group", price: 1250, bestSeller: true },
+      {
+        type: "Private",
+        price: 0 /* TODO: precio real Privado */,
+        minPeople: 2,
+      },
+    ],
     itinerary: [
       {
         day: 1,
@@ -155,8 +168,16 @@ const incaTrailTours: TourSeed[] = [
       maxGroupSize: 12,
       languages: "English and Spanish",
       category: "camino-inca",
-      price: 720,
+      price: null,
     },
+    prices: [
+      { type: "Group", price: 720 },
+      {
+        type: "Private",
+        price: 0 /* TODO: precio real Privado */,
+        minPeople: 2,
+      },
+    ],
     itinerary: [
       {
         day: 1,
@@ -206,8 +227,20 @@ const incaTrailTours: TourSeed[] = [
       maxGroupSize: 12,
       languages: "English and Spanish",
       category: "camino-inca",
-      price: null, // Price on request
+      price: null,
     },
+    prices: [
+      {
+        type: "Group",
+        price: 0 /* TODO: precio real Grupal */,
+        bestSeller: true,
+      },
+      {
+        type: "Private",
+        price: 0 /* TODO: precio real Privado */,
+        minPeople: 2,
+      },
+    ],
     itinerary: [
       {
         day: 1,
@@ -684,6 +717,219 @@ const trekkingAndAlternativeTours: TourSeed[] = [
       "High-capacity oxygen",
     ],
   },
+  {
+    tour: {
+      title: "Choquequirao: The Last Sacred Citadel (4D/3N)",
+      slug: "choquequirao-4-day-trek",
+      description:
+        "One of South America's most fascinating and demanding treks. Choquequirao, 'Cradle of Gold', is an imposing Inca citadel three times the size of Machu Picchu, perched above the deep Apurímac River canyon. With no vehicle or rail access, this sanctuary keeps a pure isolation that guarantees a deep encounter with history and untouched nature, surrounded by Andean condors and spectacular scenery.",
+      duration: "4 Days / 3 Nights",
+      difficulty: "Challenging / High",
+      maxAltitude: 3050,
+      languages: "English and Spanish",
+      category: "treks-alternativos",
+      price: null,
+    },
+    itinerary: [
+      {
+        day: 1,
+        title: "Cusco – Cachora – Capuliyoc – Chiquisca",
+        description:
+          "Very early departure from Cusco to the town of San Pedro de Cachora. At the Capuliyoc viewpoint we meet our muleteer team and begin the panoramic descent into the Apurímac canyon, enjoying changing views of snow-capped peaks down to camp at Chiquisca.",
+      },
+      {
+        day: 2,
+        title: "Chiquisca – Playa Rosalina – Marampata – Choquequirao",
+        description:
+          "We cross the Apurímac River at Playa Rosalina to begin a steady, challenging zig-zag climb to Marampata, where we have lunch with canyon views. In the afternoon we arrive at the Choquequirao archaeological complex for a guided exploration of its terraces with stone llama reliefs.",
+      },
+      {
+        day: 3,
+        title: "Choquequirao (Deep Exploration) – Chiquisca",
+        description:
+          "A morning dedicated to exploring key sectors such as the Ushnu, the Llamas sector and the upper temples. After a countryside lunch, we descend back to Chiquisca for our last night under the stars.",
+      },
+      {
+        day: 4,
+        title: "Chiquisca – Capuliyoc – Cachora – Return to Cusco",
+        description:
+          "A final morning climb to the Capuliyoc viewpoint. Our private transport awaits to take us back to the city of Cusco after an unforgettable journey.",
+      },
+    ],
+    includes: [
+      "Private transport Cusco - Cachora (round trip)",
+      "Official bilingual tourism guide",
+      "Professional cook and full camping equipment (tents and dining tent)",
+      "Muleteers and horses for gear and supplies",
+      "Official entrance to the Choquequirao archaeological complex",
+      "Full meals during the trek (3 breakfasts, 3 lunches, 3 dinners) with vegetarian options on request",
+    ],
+    excludes: [
+      "Sleeping bag",
+      "Day 1 breakfast and Day 4 lunch",
+      "Trekking poles",
+      "Tips for the guide/muleteer team",
+      "Unforeseen personal expenses",
+    ],
+  },
+  {
+    tour: {
+      title: "Inca Jungle Trail: Extreme Adventure to Machu Picchu (3D/2N)",
+      slug: "inca-jungle-trail-3-day",
+      description:
+        "A vibrant experience blending adrenaline, adventure sports and ancestral culture. Designed for dynamic travelers, this route descends from the snow-capped Andean peaks to the lush Amazon cloud forest, combining mountain biking, hiking on original Inca trails and an exciting zip-line circuit, capped off at the world wonder of Machu Picchu.",
+      duration: "3 Days / 2 Nights",
+      difficulty: "Moderate / Active",
+      maxAltitude: 4350,
+      languages: "English and Spanish",
+      category: "treks-alternativos",
+      price: null,
+    },
+    itinerary: [
+      {
+        day: 1,
+        title: "Cusco – Abra Málaga – Biking – Santa María / Santa Teresa",
+        description:
+          "Morning departure to Abra Málaga (4,350 m). After gearing up with safety equipment, we begin a controlled mountain-bike descent of about 3 hours, crossing microclimates down to the cloud forest, then continue by vehicle to Santa Teresa.",
+      },
+      {
+        day: 2,
+        title: "Santa Teresa – Zip Line – Hidroeléctrica – Aguas Calientes",
+        description:
+          "A morning of pure adrenaline zip-lining over tropical valleys. A transfer then takes us to Hidroeléctrica, where we begin a pleasant flat 2 to 3-hour hike alongside the railway to the town of Aguas Calientes.",
+      },
+      {
+        day: 3,
+        title: "Aguas Calientes – Machu Picchu Sanctuary – Return to Cusco",
+        description:
+          "Early morning tourist bus (Consettur) up to the Inca citadel of Machu Picchu, with a specialized 2-hour guided tour of its plazas, temples and terraces. In the afternoon we board the return train to Ollantaytambo and our ground transport back to Cusco.",
+      },
+    ],
+    includes: [
+      "Private transport (Cusco - Abra Málaga)",
+      "Mountain bikes with certified safety equipment (helmets and gloves)",
+      "Machu Picchu entrance and zip-line circuit entrance",
+      "Consettur tourist buses (up and down)",
+      "Return train (Expedition/Voyager)",
+      "2 nights of tourist-category lodging",
+      "Official tourism guide",
+      "Specified meals (2 breakfasts, 2 lunches, 2 dinners)",
+    ],
+    excludes: [
+      "Day 1 breakfast",
+      "Last lunch in Aguas Calientes",
+      "Optional add-on activities (rafting)",
+      "Trekking poles",
+      "Tips and personal expenses",
+    ],
+  },
+];
+
+// ---------------------------------------------------------------------------
+// BLOCK 4: CULTURAL EXCURSIONS (day tours around Cusco, outside the classic
+// Sacred Valley circuit and outside high-altitude trekking)
+// ---------------------------------------------------------------------------
+
+const culturalExcursionTours: TourSeed[] = [
+  {
+    tour: {
+      title: "Sun Route: Andean Cultural Excursion (Full Day)",
+      slug: "sun-route-cusco-puno",
+      description:
+        "Turn a simple bus trip between Puno and Cusco (or vice versa) into a rich cultural and historical immersion. Across the Andean highlands, this guided tourist-category route makes strategic stops at ancient ceremonial centers, colonial temples with exquisite Baroque art, and natural viewpoints with exceptional panoramic views.",
+      duration: "Full Day (approx. 10 hours)",
+      difficulty: "Very Easy / Accessible to everyone",
+      maxAltitude: 4335,
+      languages: "English and Spanish",
+      category: "excursiones-culturales",
+      price: null,
+    },
+    itinerary: [
+      {
+        day: 1,
+        title: "Andahuaylillas – Raqch'i – La Raya Pass – Pukara",
+        description:
+          "Early departure by panoramic bus. First stop at the church of San Pedro Apóstol de Andahuaylillas, known as the 'Sistine Chapel of America' for its stunning murals and gold leaf. Next, the monumental Raqch'i archaeological complex dedicated to the creator god Wiracocha. Then La Raya Pass (4,335 m), the natural border between Cusco and Puno, ideal for photos of snow-capped peaks. Buffet lunch in Sicuani, followed by a visit to the Pukara Lithic Museum before arriving at the final destination in the afternoon.",
+      },
+    ],
+    includes: [
+      "Equipped panoramic tourist bus (restroom, reclining seats, ambient music)",
+      "Official bilingual guide (Spanish/English) for the entire route",
+      "Official entrance tickets to all sites mentioned (Andahuaylillas, Raqch'i, Pukara)",
+      "Andean buffet lunch in Sicuani",
+      "On-board service (water/hot drinks)",
+    ],
+    excludes: [
+      "Breakfast",
+      "Extra or alcoholic drinks during the buffet lunch",
+      "Tips for guide/driver",
+      "Personal shopping expenses",
+    ],
+  },
+  {
+    tour: {
+      title: "Southern Valley of Cusco: Engineering, History and Art",
+      slug: "southern-valley-cusco",
+      description:
+        "A must-see cultural alternative just a short distance from the city of Cusco, ideal for exploring beyond the mass-tourism routes. This circuit masterfully combines advanced Inca-era hydraulic engineering at Tipón, the monumental pre-Inca Wari urbanism at Pikillacta, and the opulence of colonial religious art in Andahuaylillas.",
+      duration: "Half Day / Full Day (approx. 5-6 hours)",
+      difficulty: "Easy / Cultural",
+      languages: "English and Spanish",
+      category: "excursiones-culturales",
+      price: null,
+    },
+    itinerary: [
+      {
+        day: 1,
+        title: "Tipón – Pikillacta – Andahuaylillas",
+        description:
+          "Tipón: an impressive set of agricultural terraces and finely carved water channels showing deep Inca mastery of hydraulic engineering and the Andean worldview of water. Pikillacta: a walled, highly symmetrical archaeological complex evidencing the Wari culture's presence in the Cusco region before the Incas. Andahuaylillas: a visit to its peaceful main square and the iconic colonial church of San Pedro, famous for its Mudéjar-style woodwork and gilded altarpieces. Return to the city of Cusco.",
+      },
+    ],
+    includes: [
+      "Private tourist transport for the entire route",
+      "Official bilingual guide specialized in history and archaeology",
+      "Permanent assistance and flexible scheduling for private departures",
+    ],
+    excludes: [
+      "Cusco Tourist Ticket (BTC, required for entry to Tipón and Pikillacta)",
+      "Entrance to the Andahuaylillas chapel",
+      "Meals, drinks and tips",
+    ],
+  },
+  {
+    tour: {
+      title: "Warakpokara: Exclusive Archaeological and Scenic Circuit",
+      slug: "warakpokara-full-day",
+      description:
+        "Designed for travelers looking to escape the usual tourist crowds and connect with pristine high-Andean landscapes. Warakpokara offers a low-traffic interpretive hike through mysterious archaeological niches, natural rock formations and extensive ancestral terraces holding the best-kept secrets of the Cusco highlands.",
+      duration: "Full Day",
+      difficulty: "Moderate",
+      maxAltitude: 4100,
+      languages: "English and Spanish",
+      category: "excursiones-culturales",
+      price: null,
+    },
+    itinerary: [
+      {
+        day: 1,
+        title: "Warakpokara Interpretive Hike",
+        description:
+          "Early morning pickup by private transport heading to the remote high sectors away from the conventional circuit. Guided hike through high-Andean trails surrounded by ichu grass, Andean lagoons and little-explored archaeological remains, with our guide sharing local stories and details of the wild flora and fauna. Box lunch or a typical local meal at a privileged natural viewpoint, then return by private transport to the city of Cusco.",
+      },
+    ],
+    includes: [
+      "Private transport from Cusco (round trip)",
+      "Official tourism guide specialized in high-mountain routes",
+      "Executive box lunch or typical local meal",
+      "First-aid kit and emergency oxygen",
+    ],
+    excludes: [
+      "Personal trekking gear (warm clothing or windbreaker)",
+      "Trekking poles",
+      "Tips and extra personal expenses",
+    ],
+  },
 ];
 
 async function main() {
@@ -691,6 +937,7 @@ async function main() {
     ...incaTrailTours,
     ...cuscoValleyTours,
     ...trekkingAndAlternativeTours,
+    ...culturalExcursionTours,
   ];
 
   for (const data of allTours) {

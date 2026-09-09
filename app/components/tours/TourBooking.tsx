@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 import { Check, MessageCircle } from "lucide-react";
 
@@ -6,6 +9,7 @@ type TourPrice = {
   type: string;
   price: number;
   minPeople: number | null;
+  bestSeller?: boolean;
 };
 
 type TourBookingCardProps = {
@@ -13,11 +17,32 @@ type TourBookingCardProps = {
   maxGroupSize: number | null;
 };
 
+// Título mostrado en cada pestaña, según el "type" guardado en TourPrice.
+const TYPE_LABELS: Record<string, string> = {
+  Group: "Group Service",
+  Private: "Private Service",
+};
+
+// Descripción mostrada debajo de la pestaña activa.
+const TYPE_DESCRIPTIONS: Record<string, (opt: TourPrice) => string> = {
+  Group: () =>
+    "Join other travelers on a small-group departure. Great value without losing quality or attention on the trail.",
+  Private: (opt) =>
+    `An exclusive tour just for your group${
+      opt.minPeople ? ` (minimum ${opt.minPeople} people)` : ""
+    }. Flexible schedule and a guide dedicated only to you.`,
+};
+
 export default function TourBookingCard({
   prices,
   maxGroupSize,
 }: TourBookingCardProps) {
+  // prices ya viene ordenado por price ascendente (orderBy en la query),
+  // así que prices[0] sigue siendo el precio "desde" más bajo.
   const mainPrice = prices[0];
+
+  const [activeType, setActiveType] = useState(prices[0]?.type ?? "");
+  const active = prices.find((p) => p.type === activeType) ?? prices[0];
 
   return (
     <div className="overflow-hidden rounded-2xl bg-white shadow-lg ring-1 ring-black/5">
@@ -41,29 +66,60 @@ export default function TourBookingCard({
 
       <div className="p-6">
         {prices.length > 0 && (
-          <div className="space-y-3">
-            <h3 className="font-semibold text-[#3B2921]">Available prices</h3>
+          <div>
+            <h3 className="font-semibold text-[#3B2921]">
+              Choose your modality
+            </h3>
 
-            {prices.map((price) => (
-              <div
-                key={price.id}
-                className="flex items-center justify-between border-b border-stone-100 py-3 last:border-0"
-              >
-                <div>
-                  <p className="font-medium text-stone-700">{price.type}</p>
-
-                  {price.minPeople && (
-                    <p className="text-xs text-stone-400">
-                      From {price.minPeople} people
-                    </p>
+            {/* Pestañas */}
+            <div className="mt-3 flex gap-2 border-b border-stone-100">
+              {prices.map((price) => (
+                <button
+                  key={price.id}
+                  type="button"
+                  onClick={() => setActiveType(price.type)}
+                  className={`relative flex items-center gap-1.5 px-3 py-2.5 text-sm font-semibold transition-colors ${
+                    activeType === price.type
+                      ? "border-b-2 border-[#D9A441] text-[#3B2921]"
+                      : "text-stone-400 hover:text-stone-600"
+                  }`}
+                >
+                  {TYPE_LABELS[price.type] ?? price.type}
+                  {price.bestSeller && (
+                    <span className="rounded-full bg-[#D9A441] px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-[#3B2921]">
+                      Best Seller
+                    </span>
                   )}
-                </div>
+                </button>
+              ))}
+            </div>
 
-                <span className="font-semibold text-[#8B641F]">
-                  ${price.price.toFixed(0)}
-                </span>
+            {/* Detalle de la pestaña activa */}
+            {active && (
+              <div className="py-4">
+                <p className="text-sm leading-5 text-stone-500">
+                  {TYPE_DESCRIPTIONS[active.type]?.(active) ??
+                    "Contact us for details about this modality."}
+                </p>
+
+                <div className="mt-3 flex items-center justify-between border-t border-stone-100 pt-3">
+                  <div>
+                    <p className="font-medium text-stone-700">
+                      {TYPE_LABELS[active.type] ?? active.type}
+                    </p>
+                    {active.minPeople && (
+                      <p className="text-xs text-stone-400">
+                        From {active.minPeople} people
+                      </p>
+                    )}
+                  </div>
+
+                  <span className="font-semibold text-[#8B641F]">
+                    ${active.price.toFixed(0)}
+                  </span>
+                </div>
               </div>
-            ))}
+            )}
           </div>
         )}
 

@@ -15,12 +15,14 @@ const CATEGORY_LABELS: Record<string, string> = {
   "camino-inca": "Inca Trail",
   "cusco-valle-sagrado": "Cusco & Sacred Valley",
   "treks-alternativos": "Alternative Treks",
+  "excursiones-culturales": "Cultural Excursions", // <-- NUEVO
 };
 
 const CATEGORY_ORDER = [
   "camino-inca",
   "cusco-valle-sagrado",
   "treks-alternativos",
+  "excursiones-culturales", // <-- NUEVO
 ];
 
 export async function getNavTours(): Promise<NavCategoryData[]> {
