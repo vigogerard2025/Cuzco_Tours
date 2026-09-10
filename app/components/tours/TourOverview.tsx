@@ -1,4 +1,5 @@
-import { Mountain, Users, Languages, MapPin } from "lucide-react";
+import { Mountain, Languages, MapPin } from "lucide-react";
+import GroupSizeInfoCard from "./GroupSizeQuickInfo"; // ajusta la ruta si guardas el componente en otro lado
 
 type TourOverviewProps = {
   tour: {
@@ -8,6 +9,10 @@ type TourOverviewProps = {
     maxGroupSize: number | null;
     languages: string;
     description: string;
+    prices: {
+      type: string;
+      minPeople: number | null;
+    }[];
   };
 };
 
@@ -45,10 +50,9 @@ export default function TourOverview({ tour }: TourOverviewProps) {
           }
         />
 
-        <InfoCard
-          icon={<Users size={21} />}
-          label="Group size"
-          value={tour.maxGroupSize ? `Up to ${tour.maxGroupSize} people` : "—"}
+        <GroupSizeInfoCard
+          maxGroupSize={tour.maxGroupSize}
+          prices={tour.prices}
         />
       </div>
 

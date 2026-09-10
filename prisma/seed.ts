@@ -472,7 +472,7 @@ const trekkingAndAlternativeTours: TourSeed[] = [
       difficulty: "Easy",
       maxAltitude: 2430,
       languages: "English and Spanish",
-      category: "treks-alternativos",
+      category: "machu-picchu-tours",
       price: null,
     },
     itinerary: [
@@ -502,7 +502,7 @@ const trekkingAndAlternativeTours: TourSeed[] = [
       difficulty: "Easy to Moderate",
       maxAltitude: 3762,
       languages: "English and Spanish",
-      category: "treks-alternativos",
+      category: "machu-picchu-tours",
       price: null,
     },
     itinerary: [
@@ -542,7 +542,7 @@ const trekkingAndAlternativeTours: TourSeed[] = [
       difficulty: "Moderate (requires a flat 3-hour hike)",
       maxAltitude: 4316,
       languages: "English and Spanish",
-      category: "treks-alternativos",
+      category: "machu-picchu-tours",
       price: null,
     },
     itinerary: [

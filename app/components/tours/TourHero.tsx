@@ -1,5 +1,6 @@
 import Image from "next/image";
-import { CalendarDays, Mountain, Users, Languages } from "lucide-react";
+import { CalendarDays, Mountain, Languages } from "lucide-react";
+import GroupSizeQuickInfo from "@/app/components/tours/GroupSizeQuickInfo"; // ajusta la ruta si guardas el componente en otro lado
 
 type TourHeroProps = {
   tour: {
@@ -14,6 +15,10 @@ type TourHeroProps = {
       id: number;
       url: string;
       alt: string | null;
+    }[];
+    prices: {
+      type: string;
+      minPeople: number | null;
     }[];
   };
 };
@@ -93,14 +98,9 @@ export default function TourHero({ tour }: TourHeroProps) {
             }
           />
 
-          <QuickInfo
-            icon={<Users size={21} />}
-            label="Group size"
-            value={
-              tour.maxGroupSize
-                ? `Up to ${tour.maxGroupSize} people`
-                : "Not specified"
-            }
+          <GroupSizeQuickInfo
+            maxGroupSize={tour.maxGroupSize}
+            prices={tour.prices}
           />
         </div>
       </div>

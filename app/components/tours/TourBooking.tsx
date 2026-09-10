@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { Check, MessageCircle } from "lucide-react";
+import { useTourModality } from "@/app/context/TourModalityContext"; // ajusta la ruta si tu context vive en otro lado
 
 type TourPrice = {
   id: number;
@@ -41,7 +41,7 @@ export default function TourBookingCard({
   // así que prices[0] sigue siendo el precio "desde" más bajo.
   const mainPrice = prices[0];
 
-  const [activeType, setActiveType] = useState(prices[0]?.type ?? "");
+  const { activeType, setActiveType } = useTourModality();
   const active = prices.find((p) => p.type === activeType) ?? prices[0];
 
   return (

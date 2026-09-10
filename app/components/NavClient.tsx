@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState, useRef, useEffect } from "react";
 import {
   Mail,
@@ -13,7 +14,7 @@ import {
   CalendarCheck,
   Users,
 } from "lucide-react";
-import Image from "next/image";
+
 // ---------------------------------------------------------------------------
 // Iconos de marca — lucide-react ya no exporta logos de redes sociales,
 // así que se definen aquí como SVGs propios con la misma firma de props
@@ -88,10 +89,16 @@ const SOCIALS = [
 
 // ---------------------------------------------------------------------------
 
+type NavTourLink = {
+  title: string;
+  slug: string;
+  href: string;
+};
+
 type NavCategoryData = {
   key: string;
   label: string;
-  tours: { title: string; slug: string }[];
+  tours: NavTourLink[];
 };
 
 type NavClientProps = {
@@ -125,69 +132,45 @@ export default function NavClient({ categories }: NavClientProps) {
     <header className="sticky top-0 z-50 font-manrope">
       {/* ---------------- Nivel 1: Topbar de contacto ---------------- */}
       <div className="bg-stone-950 text-stone-200">
-        {" "}
-        <div className="mx-auto flex h-9 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          {" "}
-          {/* Contacto */}{" "}
-          <div className="hidden items-center gap-6 sm:flex">
-            {" "}
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-2 text-xs sm:px-6 lg:px-8">
+          <div className="hidden items-center gap-5 sm:flex">
             <a
               href={`mailto:${TOPBAR_CONTACT.email}`}
-              className="flex items-center gap-2 text-[11px] font-medium tracking-wide text-stone-300 transition-colors hover:text-amber-400"
+              className="flex items-center gap-1.5 transition-colors hover:text-amber-400"
             >
-              {" "}
-              <Mail
-                size={13}
-                strokeWidth={1.8}
-                className="shrink-0 text-amber-400"
-              />{" "}
-              <span>{TOPBAR_CONTACT.email}</span>{" "}
-            </a>{" "}
+              <Mail size={13} className="text-amber-400" />
+              {TOPBAR_CONTACT.email}
+            </a>
             <a
               href={`tel:${TOPBAR_CONTACT.phoneLabel.replace(/\s/g, "")}`}
-              className="flex items-center gap-2 text-[11px] font-medium tracking-wide text-stone-300 transition-colors hover:text-amber-400"
+              className="flex items-center gap-1.5 transition-colors hover:text-amber-400"
             >
-              {" "}
-              <Phone
-                size={13}
-                strokeWidth={1.8}
-                className="shrink-0 text-amber-400"
-              />{" "}
-              <span>{TOPBAR_CONTACT.phoneLabel}</span>{" "}
-            </a>{" "}
+              <Phone size={13} className="text-amber-400" />
+              {TOPBAR_CONTACT.phoneLabel}
+            </a>
             <a
               href={`https://wa.me/${TOPBAR_CONTACT.whatsapp}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 text-[11px] font-medium tracking-wide text-stone-300 transition-colors hover:text-amber-400"
+              className="flex items-center gap-1.5 transition-colors hover:text-amber-400"
             >
-              {" "}
-              <MessageCircle
-                size={13}
-                strokeWidth={1.8}
-                className="shrink-0 text-amber-400"
-              />{" "}
-              <span>WhatsApp</span>{" "}
-            </a>{" "}
-          </div>{" "}
-          {/* Mobile — solo WhatsApp */}{" "}
+              <MessageCircle size={13} className="text-amber-400" />
+              WhatsApp
+            </a>
+          </div>
+
+          {/* En mobile mostramos solo WhatsApp para no saturar */}
           <a
             href={`https://wa.me/${TOPBAR_CONTACT.whatsapp}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 text-[11px] font-medium tracking-wide text-stone-300 transition-colors hover:text-amber-400 sm:hidden"
+            className="flex items-center gap-1.5 sm:hidden"
           >
-            {" "}
-            <MessageCircle
-              size={13}
-              strokeWidth={1.8}
-              className="text-amber-400"
-            />{" "}
-            <span>WhatsApp</span>{" "}
-          </a>{" "}
-          {/* Redes sociales */}{" "}
-          <div className="flex items-center gap-3.5">
-            {" "}
+            <MessageCircle size={13} className="text-amber-400" />
+            WhatsApp
+          </a>
+
+          <div className="flex items-center gap-3">
             {SOCIALS.map(({ icon: Icon, href, label }) => (
               <a
                 key={label}
@@ -195,410 +178,145 @@ export default function NavClient({ categories }: NavClientProps) {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={label}
-                className="text-stone-400 transition-all duration-200 hover:-translate-y-0.5 hover:text-amber-400"
+                className="text-stone-300 transition-colors hover:text-amber-400"
               >
-                {" "}
-                <Icon size={14} />
+                <Icon size={15} />
               </a>
-            ))}{" "}
-          </div>{" "}
-        </div>{" "}
+            ))}
+          </div>
+        </div>
       </div>
+
       {/* ---------------- Nivel 2: Logo + utilidades ---------------- */}
       <div
         className={`bg-white transition-shadow ${scrolled ? "shadow-sm" : ""}`}
       >
-        <div className="mx-auto flex h-[76px] max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-4 py-3 sm:px-6 lg:px-8">
           {/* Logo */}
-          <Link href="/" className="flex shrink-0 items-center gap-3">
+          <Link href="/" className="flex items-center gap-3">
             <Image
               src="/logo.jpg"
-              alt="Urpi Wayra"
-              width={68}
-              height={68}
-              priority
-              className="h-16 w-16 rounded-full object-cover ring-1 ring-stone-200"
+              alt="Urpi Wayra Tours"
+              width={44}
+              height={44}
+              className="h-11 w-11 rounded-full object-cover"
             />
 
-            <div className="flex flex-col justify-center">
-              <span className="font-fraunces text-[19px] font-semibold leading-[1.1] tracking-[-0.01em] text-stone-900">
-                URPI WAYRA
+            <span className="flex flex-col leading-tight">
+              <span className="font-fraunces text-xl font-semibold tracking-tight text-stone-900">
+                Urpi Wayra
               </span>
-
-              <span className="mt-1 text-[9px] font-medium uppercase tracking-[0.25em] text-stone-500">
-                Adventures
+              <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-700">
+                Tours
               </span>
-            </div>
+            </span>
           </Link>
 
-          {/* Utilidades — desktop */}
-          <div className="hidden items-center gap-7 lg:flex">
+          {/* Utilidades — visibles solo en desktop */}
+          <div className="hidden items-center gap-6 lg:flex">
             <a
               href="https://www.tripadvisor.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="group flex items-center gap-2 text-[13px] font-medium text-stone-700 transition-colors hover:text-terracotta-600"
+              className="flex items-center gap-1.5 text-sm font-semibold text-stone-700 transition-colors hover:text-terracotta-600"
             >
-              <Star
-                size={16}
-                strokeWidth={2}
-                className="text-amber-500 transition-transform group-hover:scale-110"
-              />
-              <span>Reseñas</span>
+              <Star size={16} className="text-amber-500" />
+              Reseñas
             </a>
-
             <Link
               href="/permiso-camino-inca"
-              className="group flex items-center gap-2 text-[13px] font-medium text-stone-700 transition-colors hover:text-terracotta-600"
+              className="flex items-center gap-1.5 text-sm font-semibold text-stone-700 transition-colors hover:text-terracotta-600"
             >
-              <CalendarCheck
-                size={16}
-                strokeWidth={2}
-                className="text-amber-500 transition-transform group-hover:scale-110"
-              />
-              <span>Disponibilidad Camino Inca</span>
+              <CalendarCheck size={16} className="text-amber-500" />
+              Disponibilidad Camino Inca
             </Link>
-
             <Link
               href="/quienes-somos"
-              className="group flex items-center gap-2 text-[13px] font-medium text-stone-700 transition-colors hover:text-terracotta-600"
+              className="flex items-center gap-1.5 text-sm font-semibold text-stone-700 transition-colors hover:text-terracotta-600"
             >
-              <Users
-                size={16}
-                strokeWidth={2}
-                className="text-amber-500 transition-transform group-hover:scale-110"
-              />
-              <span>Quiénes Somos</span>
+              <Users size={16} className="text-amber-500" />
+              Quiénes Somos
             </Link>
           </div>
 
-          {/* Acciones */}
           <div className="flex items-center gap-3">
             <Link
               href="/contacto"
-              className="hidden rounded-full bg-terracotta-600 px-5 py-2.5 text-[13px] font-semibold text-black shadow-sm transition-all hover:bg-terracotta-700 hover:shadow-md sm:inline-flex"
+              className="hidden rounded-full bg-terracotta-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm transition-colors hover:bg-terracotta-700 sm:inline-block"
             >
               Contáctenos
             </Link>
 
-            {/* Menú mobile */}
+            {/* Botón menú mobile */}
             <button
               type="button"
               aria-label="Abrir menú"
               onClick={() => setMobileOpen(true)}
-              className="rounded-full p-2.5 text-stone-700 transition-colors hover:bg-stone-100 lg:hidden"
+              className="rounded-md p-2 text-stone-700 hover:bg-stone-100 lg:hidden"
             >
-              <Menu size={25} strokeWidth={2} />
+              <Menu size={26} />
             </button>
           </div>
         </div>
       </div>
-      {/* ---------------- Nivel 3: Navegación principal ---------------- */}
-      {/* =========================================================
-    Nivel 3: Navegación principal
-========================================================= */}
-      <nav className="hidden bg-[#3B2921] lg:block">
+
+      {/* ---------------- Nivel 3: Navegación principal con dropdowns por categoría ---------------- */}
+      <nav className="hidden border-t border-stone-100 bg-white lg:block">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <ul className="flex h-[54px] items-stretch">
-            {/* ============================
-          CATEGORÍAS
-      ============================ */}
+          <ul className="flex items-center gap-1">
             {categories.map((category) => (
               <li
                 key={category.key}
-                className="group relative"
+                className="relative"
                 onMouseEnter={() => handleEnter(category.key)}
                 onMouseLeave={handleLeave}
               >
                 <Link
                   href={`/tours/${category.key}`}
-                  className={`
-              relative
-              flex h-full items-center gap-2
-              px-5
-              text-[11px]
-              font-bold
-              uppercase
-              tracking-[0.13em]
-              transition-all
-              duration-200
-
-              ${
-                openMenu === category.key
-                  ? "bg-[#4B3429] text-[#F5C76A]"
-                  : "text-white hover:bg-[#4B3429] hover:text-[#F5C76A]"
-              }
-            `}
+                  className="flex items-center gap-1 px-4 py-3.5 text-sm font-bold uppercase tracking-wide text-stone-800 transition-colors hover:text-terracotta-600"
                 >
-                  {/* Indicador inferior */}
-                  <span
-                    className={`
-                absolute bottom-0 left-1/2 h-[2px]
-                -translate-x-1/2
-                bg-[#D9A441]
-                transition-all duration-300
-                ${
-                  openMenu === category.key
-                    ? "w-[55%]"
-                    : "w-0 group-hover:w-[55%]"
-                }
-              `}
-                  />
-
-                  <span>{category.label}</span>
-
+                  {category.label}
                   <ChevronDown
-                    size={14}
-                    strokeWidth={2}
-                    className={`
-                transition-transform duration-300
-                ${
-                  openMenu === category.key
-                    ? "rotate-180"
-                    : "group-hover:translate-y-0.5"
-                }
-              `}
+                    size={15}
+                    className={`transition-transform ${
+                      openMenu === category.key ? "rotate-180" : ""
+                    }`}
                   />
                 </Link>
 
-                {/* =================================================
-              DROPDOWN
-          ================================================= */}
+                {/* Dropdown con los títulos reales de esta categoría */}
                 {openMenu === category.key && category.tours.length > 0 && (
-                  <div
-                    className="
-                  absolute
-                  left-0
-                  top-full
-                  z-50
-                  w-[400px]
-                  overflow-hidden
-                  rounded-b-2xl
-                  border
-                  border-stone-200
-                  bg-[#F2F1EF]
-                  shadow-[0_18px_45px_rgba(30,20,15,0.25)]
-                  animate-in
-                  fade-in
-                  slide-in-from-top-1
-                  duration-200
-                "
-                  >
-                    {/* ============================
-                    CABECERA
-                ============================ */}
-                    <div
-                      className="
-                    relative
-                    border-b
-                    border-stone-200
-                    bg-[#E7E3DE]
-                    px-6
-                    py-5
-                  "
-                    >
-                      {/* pequeña línea decorativa */}
-                      <div className="absolute left-6 top-0 h-[3px] w-10 bg-[#C6923A]" />
-
-                      <p
-                        className="
-                      text-[9px]
-                      font-bold
-                      uppercase
-                      tracking-[0.22em]
-                      text-[#9A806B]
-                    "
-                      >
-                        Explora nuestros tours
-                      </p>
-
-                      <p
-                        className="
-                      mt-1.5
-                      font-heading
-                      text-[22px]
-                      font-semibold
-                      leading-tight
-                      text-[#3B2921]
-                    "
-                      >
-                        {category.label}
-                      </p>
-                    </div>
-
-                    {/* ============================
-                    LISTA DE TOURS
-                ============================ */}
-                    <ul className="max-h-[65vh] overflow-y-auto p-3">
+                  <div className="absolute left-0 top-full z-50 max-h-[70vh] w-[360px] overflow-y-auto rounded-xl border border-stone-100 bg-white p-4 shadow-xl">
+                    <ul className="space-y-1">
                       {category.tours.map((tour) => (
-                        <li key={tour.slug}>
+                        <li key={tour.href}>
                           <Link
-                            href={`/tours/${tour.slug}`}
+                            href={tour.href}
+                            className="block rounded-md px-3 py-2 text-sm text-stone-600 transition-colors hover:bg-stone-50 hover:text-terracotta-600"
                             onClick={() => setOpenMenu(null)}
-                            className="
-                          group/tour
-                          flex
-                          items-center
-                          gap-3
-                          rounded-xl
-                          px-4
-                          py-3
-                          text-[13px]
-                          font-medium
-                          leading-snug
-                          text-[#514943]
-                          transition-all
-                          duration-200
-                          hover:bg-white
-                          hover:text-[#8B4A32]
-                          hover:shadow-[0_3px_12px_rgba(60,40,25,0.07)]
-                        "
                           >
-                            {/* Número / indicador */}
-                            <span
-                              className="
-                            flex
-                            h-6
-                            w-6
-                            shrink-0
-                            items-center
-                            justify-center
-                            rounded-full
-                            bg-[#E3DFDA]
-                            text-[9px]
-                            font-bold
-                            text-[#90745E]
-                            transition-all
-                            duration-200
-                            group-hover/tour:bg-[#D9A441]
-                            group-hover/tour:text-white
-                          "
-                            >
-                              {String(
-                                category.tours.indexOf(tour) + 1,
-                              ).padStart(2, "0")}
-                            </span>
-
-                            {/* Nombre */}
-                            <span className="flex-1">{tour.title}</span>
-
-                            {/* Flecha */}
-                            <span
-                              className="
-                            translate-x-[-4px]
-                            text-[#B7ADA5]
-                            opacity-0
-                            transition-all
-                            duration-200
-                            group-hover/tour:translate-x-0
-                            group-hover/tour:opacity-100
-                            group-hover/tour:text-[#C6923A]
-                          "
-                            >
-                              →
-                            </span>
+                            {tour.title}
                           </Link>
                         </li>
                       ))}
                     </ul>
-
-                    {/* ============================
-                    FOOTER DEL DROPDOWN
-                ============================ */}
-                    <div
-                      className="
-                    border-t
-                    border-stone-200
-                    bg-[#EAE7E3]
-                    px-5
-                    py-3
-                  "
-                    >
-                      <Link
-                        href={`/tours/${category.key}`}
-                        onClick={() => setOpenMenu(null)}
-                        className="
-                      flex
-                      items-center
-                      justify-between
-                      text-[10px]
-                      font-bold
-                      uppercase
-                      tracking-[0.14em]
-                      text-[#7D6655]
-                      transition-colors
-                      hover:text-[#A45A38]
-                    "
-                      >
-                        <span>Ver todos los tours</span>
-
-                        <span className="text-sm">→</span>
-                      </Link>
-                    </div>
                   </div>
                 )}
               </li>
             ))}
 
-            {/* =================================================
-          OFERTAS
-      ================================================= */}
-            <li className="ml-auto">
+            <li>
               <Link
                 href="/ofertas"
-                className="
-            relative
-            flex
-            h-full
-            items-center
-            gap-2
-            px-5
-            text-[11px]
-            font-bold
-            uppercase
-            tracking-[0.13em]
-            text-[#F5C76A]
-            transition-all
-            duration-200
-            hover:bg-[#4B3429]
-            hover:text-[#FFD98A]
-          "
+                className="px-4 py-3.5 text-sm font-bold uppercase tracking-wide text-amber-600 transition-colors hover:text-amber-700"
               >
-                <span
-                  className="
-              h-1.5
-              w-1.5
-              animate-pulse
-              rounded-full
-              bg-[#D9A441]
-            "
-                />
                 Ofertas
               </Link>
             </li>
-
-            {/* =================================================
-          BLOG
-      ================================================= */}
             <li>
               <Link
                 href="/blog"
-                className="
-            relative
-            flex
-            h-full
-            items-center
-            px-5
-            text-[11px]
-            font-semibold
-            uppercase
-            tracking-[0.13em]
-            text-[#E8DDD5]
-            transition-all
-            duration-200
-            hover:bg-[#4B3429]
-            hover:text-[#F5C76A]
-          "
+                className="px-4 py-3.5 text-sm font-bold uppercase tracking-wide text-stone-800 transition-colors hover:text-terracotta-600"
               >
                 Blog
               </Link>
@@ -661,9 +379,9 @@ export default function NavClient({ categories }: NavClientProps) {
                       category.tours.length > 0 && (
                         <ul className="space-y-1.5 pb-3 pl-2">
                           {category.tours.map((tour) => (
-                            <li key={tour.slug}>
+                            <li key={tour.href}>
                               <Link
-                                href={`/tours/${tour.slug}`}
+                                href={tour.href}
                                 className="block py-1 text-sm text-stone-600"
                                 onClick={() => setMobileOpen(false)}
                               >
