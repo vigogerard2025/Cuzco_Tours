@@ -2,12 +2,15 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
 import { prisma } from "@/app/lib/prisma";
+import { isCategoryKey, CATEGORY_LABELS } from "@/app/lib/categories";
+import { getToursByCategory } from "@/app/lib/tours";
 
 import TourHero from "@/app/components/tours/TourHero";
 import TourOverview from "@/app/components/tours/TourOverview";
 import TourItinerary from "@/app/components/tours/TourItinerary";
 import TourIncludes from "@/app/components/tours/TourIncludes";
 import TourBookingCard from "@/app/components/tours/TourBooking";
+import CategoryToursGrid from "@/app/components/tours/CategoryToursGrid";
 import { TourModalityProvider } from "@/app/context/TourModalityContext";
 
 type TourPageProps = {
@@ -59,6 +62,12 @@ export async function generateMetadata({
 }: TourPageProps): Promise<Metadata> {
   const { slug } = await params;
 
+  if (isCategoryKey(slug)) {
+    return {
+      title: `${CATEGORY_LABELS[slug] ?? slug} | Urpi Wayra Adventures`,
+    };
+  }
+
   const tour = await getTour(slug);
 
   if (!tour) {
@@ -78,16 +87,35 @@ export default async function TourPage({
   searchParams,
 }: TourPageProps) {
   const { slug } = await params;
-  const { type } = await searchParams;
 
+  // --- Caso 1: es una categoría (ej. /tours/camino-inca) -----------------
+  if (isCategoryKey(slug)) {
+    const tours = await getToursByCategory(slug);
+
+    return (
+      <main className="min-h-screen bg-[#F7F4EF] px-4 py-12 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl">
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#B27A22]">
+            Explore our tours
+          </p>
+          <h1 className="mt-2 font-heading text-3xl font-semibold text-[#3B2921] sm:text-4xl">
+            {CATEGORY_LABELS[slug] ?? slug}
+          </h1>
+
+          <CategoryToursGrid tours={tours} />
+        </div>
+      </main>
+    );
+  }
+
+  // --- Caso 2: es un tour individual (ej. /tours/city-tour-cusco) --------
+  const { type } = await searchParams;
   const tour = await getTour(slug);
 
   if (!tour) {
     notFound();
   }
 
-  // Valida el ?type= de la URL contra las modalidades reales de este tour;
-  // si no viene o no es válido, cae a la primera modalidad disponible.
   const initialType = tour.prices.some((p) => p.type === type)
     ? (type as string)
     : (tour.prices[0]?.type ?? "");

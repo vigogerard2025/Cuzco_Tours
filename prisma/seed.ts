@@ -31,6 +31,7 @@ type TourSeed = {
   }[];
   includes?: string[];
   excludes?: string[];
+  images?: { url: string; alt?: string | null }[];
 };
 
 // Upserts the base Tour, then replaces its related rows (prices, itinerary,
@@ -46,6 +47,7 @@ async function upsertFullTour(data: TourSeed) {
   await prisma.tourItinerary.deleteMany({ where: { tourId: tour.id } });
   await prisma.tourInclude.deleteMany({ where: { tourId: tour.id } });
   await prisma.tourExclude.deleteMany({ where: { tourId: tour.id } });
+  await prisma.tourImage.deleteMany({ where: { tourId: tour.id } });
 
   if (data.prices?.length) {
     await prisma.tourPrice.createMany({
@@ -68,6 +70,12 @@ async function upsertFullTour(data: TourSeed) {
   if (data.excludes?.length) {
     await prisma.tourExclude.createMany({
       data: data.excludes.map((item) => ({ item, tourId: tour.id })),
+    });
+  }
+
+  if (data.images?.length) {
+    await prisma.tourImage.createMany({
+      data: data.images.map((img) => ({ ...img, tourId: tour.id })),
     });
   }
 
@@ -155,6 +163,12 @@ const incaTrailTours: TourSeed[] = [
       "Mandatory travel insurance",
       "Voluntary tips for field staff",
     ],
+    images: [
+      {
+        url: "/inka-trail/camino-inca-2.jpg",
+        alt: "4-Day Classic Inca Trail to Machu Picchu",
+      },
+    ],
   },
   {
     tour: {
@@ -213,6 +227,12 @@ const incaTrailTours: TourSeed[] = [
       "Trekking poles with rubber tips ($20 USD per pair)",
       "Travel medical insurance",
       "Tips",
+    ],
+    images: [
+      {
+        url: "/inka-trail/camino-inca-1.jpg",
+        alt: "2-Day Short Inca Trail to Machu Picchu",
+      },
     ],
   },
   {
@@ -296,6 +316,12 @@ const incaTrailTours: TourSeed[] = [
       "Sleeping bag and trekking pole rental",
       "Voluntary tips",
     ],
+    images: [
+      {
+        url: "/inka-trail/camino-inca-3.jfif",
+        alt: "5-Day Inca Trail to Machu Picchu",
+      },
+    ],
   },
 ];
 
@@ -326,6 +352,12 @@ const cuscoValleyTours: TourSeed[] = [
       "Exclusive professional guide and private transport (Private)",
     ],
     excludes: ["Entrance tickets / Tourist Ticket, meals and tips"],
+    images: [
+      {
+        url: "/Valle Sagrado/valle-sagrado1.jpg", // TODO: reemplaza por la imagen real
+        alt: "City Tour Cusco",
+      },
+    ],
   },
   {
     tour: {
@@ -343,6 +375,12 @@ const cuscoValleyTours: TourSeed[] = [
     prices: [{ type: "Private", price: 30, minPeople: 2 }],
     includes: ["Exclusive professional guide for the walking route"],
     excludes: ["Optional museum entrance fees, meals and tips"],
+    images: [
+      {
+        url: "/Valle Sagrado/28.png", // TODO: reemplaza por la imagen real
+        alt: "Walking Tour Cusco",
+      },
+    ],
   },
   {
     tour: {
@@ -368,6 +406,12 @@ const cuscoValleyTours: TourSeed[] = [
     excludes: [
       "Entrance tickets / Tourist Ticket and tips (Group)",
       "Entrance tickets / Tourist Ticket, meals (lunch) and tips (Private)",
+    ],
+    images: [
+      {
+        url: "/Valle Sagrado/29.png", // TODO: reemplaza por la imagen real
+        alt: "Sacred Valley VIP",
+      },
     ],
   },
   {
@@ -395,6 +439,12 @@ const cuscoValleyTours: TourSeed[] = [
       "Train ticket to Aguas Calientes, entrance tickets / Tourist Ticket and tips (Group)",
       "Entrance tickets / Tourist Ticket and tips (Private)",
     ],
+    images: [
+      {
+        url: "/Valle Sagrado/valle-sagrado4.jpg", // TODO: reemplaza por la imagen real
+        alt: "Sacred Valley + Machu Picchu Connection",
+      },
+    ],
   },
   {
     tour: {
@@ -417,6 +467,12 @@ const cuscoValleyTours: TourSeed[] = [
     excludes: [
       "Entrance tickets / Tourist Ticket, entry to the Maras Salt Mines, meals and tips",
     ],
+    images: [
+      {
+        url: "/Valle Sagrado/valle-sagrado3.jpg", // TODO: reemplaza por la imagen real
+        alt: "Maras, Moray and Chinchero",
+      },
+    ],
   },
   {
     tour: {
@@ -435,6 +491,12 @@ const cuscoValleyTours: TourSeed[] = [
       "Exclusive professional guide, private transport, local meal and cultural experience with the community",
     ],
     excludes: ["Personal expenses and tips"],
+    images: [
+      {
+        url: "/Valle Sagrado/valle-sagrado2.jpg", // TODO: reemplaza por la imagen real
+        alt: "Huilloc Community Experience",
+      },
+    ],
   },
   {
     tour: {
@@ -453,6 +515,12 @@ const cuscoValleyTours: TourSeed[] = [
       "Private transport, full safety equipment and specialized instructor guide",
     ],
     excludes: ["Personal expenses and tips"],
+    images: [
+      {
+        url: "/Valle Sagrado/valle-sagrado4.jpg", // TODO: reemplaza por la imagen real
+        alt: "Zipline Adventure",
+      },
+    ],
   },
 ];
 
@@ -491,6 +559,12 @@ const trekkingAndAlternativeTours: TourSeed[] = [
       "Certified bilingual professional guide",
     ],
     excludes: ["Meals (lunch/dinner)", "Tips", "Travel insurance"],
+    images: [
+      {
+        url: "/Macchu Picchu/macchu-picchu1.jpg", // TODO: reemplaza por la imagen real
+        alt: "Machu Picchu Classic Full Day (by Train)",
+      },
+    ],
   },
   {
     tour: {
@@ -530,6 +604,12 @@ const trekkingAndAlternativeTours: TourSeed[] = [
     excludes: [
       "Entrance tickets (Tourist Ticket and Maras)",
       "Day 2 lunch/dinner",
+    ],
+    images: [
+      {
+        url: "/Macchu Picchu/macchu-picchu3.jpg", // TODO: reemplaza por la imagen real
+        alt: "Sacred Valley VIP + Machu Picchu Connection (2D/1N)",
+      },
     ],
   },
   {
@@ -575,6 +655,12 @@ const trekkingAndAlternativeTours: TourSeed[] = [
       "Day 2 Consettur buses",
       "Unspecified meals",
     ],
+    images: [
+      {
+        url: "/Macchu Picchu/macchu-picchu2.jpg", // TODO: reemplaza por la imagen real
+        alt: "Machu Picchu via Hidroeléctrica (2D/1N Adventure)",
+      },
+    ],
   },
   {
     tour: {
@@ -605,6 +691,12 @@ const trekkingAndAlternativeTours: TourSeed[] = [
       "First-aid kit with oxygen",
     ],
     excludes: ["Community entrance fee", "Horse rental"],
+    images: [
+      {
+        url: "/Alternative Treks/humantay.jpg", // TODO: reemplaza por la imagen real
+        alt: "Humantay Lagoon Full Day",
+      },
+    ],
   },
   {
     tour: {
@@ -632,6 +724,12 @@ const trekkingAndAlternativeTours: TourSeed[] = [
       "Transport, breakfast and lunch",
       "Bilingual guide",
       "First aid with oxygen",
+    ],
+    images: [
+      {
+        url: "/Alternative Treks/montaña-arcoiris.jpg", // TODO: reemplaza por la imagen real
+        alt: "Rainbow Mountain (Vinicunca) Full Day",
+      },
     ],
   },
   {
@@ -663,6 +761,12 @@ const trekkingAndAlternativeTours: TourSeed[] = [
       "Breakfast and lunch",
       "First aid",
     ],
+    images: [
+      {
+        url: "/Alternative Treks/valle-rojo.jpg", // TODO: reemplaza por la imagen real
+        alt: "Rainbow Mountain + Red Valley by ATV",
+      },
+    ],
   },
   {
     tour: {
@@ -687,6 +791,12 @@ const trekkingAndAlternativeTours: TourSeed[] = [
       },
     ],
     includes: ["Transport, breakfast, lunch", "Bilingual guide", "First aid"],
+    images: [
+      {
+        url: "/Alternative Treks/Ausangate.jpg", // TODO: reemplaza por la imagen real
+        alt: "Ausangate 7 Lagoons Full Day Trek",
+      },
+    ],
   },
   {
     tour: {
@@ -715,6 +825,12 @@ const trekkingAndAlternativeTours: TourSeed[] = [
       "High-calorie meals",
       "Approach poles/crampons",
       "High-capacity oxygen",
+    ],
+    images: [
+      {
+        url: "/Alternative Treks/quelecaya.jpg", // TODO: reemplaza por la imagen real
+        alt: "Quelccaya Glacier Expedition Full Day",
+      },
     ],
   },
   {
@@ -771,6 +887,12 @@ const trekkingAndAlternativeTours: TourSeed[] = [
       "Tips for the guide/muleteer team",
       "Unforeseen personal expenses",
     ],
+    images: [
+      {
+        url: "/Alternative Treks/choquequirao.jpg", // TODO: reemplaza por la imagen real
+        alt: "Choquequirao: The Last Sacred Citadel (4D/3N)",
+      },
+    ],
   },
   {
     tour: {
@@ -822,6 +944,20 @@ const trekkingAndAlternativeTours: TourSeed[] = [
       "Trekking poles",
       "Tips and personal expenses",
     ],
+    images: [
+      {
+        url: "/images/tours/inca-jungle-trail-3-day-1.jpg",
+        alt: "Inca Jungle Trail: Extreme Adventure to Machu Picchu (3D/2N)",
+      },
+      {
+        url: "/images/tours/inca-jungle-trail-3-day-2.jpg",
+        alt: "Inca Jungle Trail: Extreme Adventure to Machu Picchu (3D/2N)",
+      },
+      {
+        url: "/images/tours/inca-jungle-trail-3-day-3.jpg",
+        alt: "Inca Jungle Trail: Extreme Adventure to Machu Picchu (3D/2N)",
+      },
+    ],
   },
 ];
 
@@ -865,6 +1001,12 @@ const culturalExcursionTours: TourSeed[] = [
       "Tips for guide/driver",
       "Personal shopping expenses",
     ],
+    images: [
+      {
+        url: "/Cultural Excursions/ruta-sol.jpg", // TODO: reemplaza por la imagen real
+        alt: "Sun Route: Andean Cultural Excursion (Full Day)",
+      },
+    ],
   },
   {
     tour: {
@@ -895,6 +1037,12 @@ const culturalExcursionTours: TourSeed[] = [
       "Cusco Tourist Ticket (BTC, required for entry to Tipón and Pikillacta)",
       "Entrance to the Andahuaylillas chapel",
       "Meals, drinks and tips",
+    ],
+    images: [
+      {
+        url: "/Cultural Excursions/valle-sur1.jpg", // TODO: reemplaza por la imagen real
+        alt: "Southern Valley of Cusco: Engineering, History and Art",
+      },
     ],
   },
   {
@@ -928,6 +1076,12 @@ const culturalExcursionTours: TourSeed[] = [
       "Personal trekking gear (warm clothing or windbreaker)",
       "Trekking poles",
       "Tips and extra personal expenses",
+    ],
+    images: [
+      {
+        url: "/Cultural Excursions/warakpokara.jpg", // TODO: reemplaza por la imagen real
+        alt: "Warakpokara: Exclusive Archaeological and Scenic Circuit",
+      },
     ],
   },
 ];
