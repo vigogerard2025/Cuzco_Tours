@@ -242,9 +242,9 @@ export default function NavClient({ categories }: NavClientProps) {
           <div className="flex items-center gap-3">
             <Link
               href="/contacto"
-              className="hidden rounded-full bg-terracotta-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm transition-colors hover:bg-terracotta-700 sm:inline-block"
+              className="hidden rounded-full bg-terracotta-600 px-5 py-2.5 text-sm font-bold text-black shadow-sm transition-colors hover:bg-terracotta-700 sm:inline-block"
             >
-              Contáctenos
+              Contact Us
             </Link>
 
             {/* Botón menú mobile */}

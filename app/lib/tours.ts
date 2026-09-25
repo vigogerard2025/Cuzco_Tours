@@ -24,7 +24,27 @@ export async function getTourBySlug(slug: string) {
     },
   });
 }
-
+export async function getAllTours() {
+  return prisma.tour.findMany({
+    select: {
+      title: true,
+      slug: true,
+      description: true,
+      duration: true,
+      difficulty: true,
+      price: true,
+      prices: {
+        select: { type: true, price: true },
+        orderBy: { price: "asc" },
+      },
+      images: {
+        select: { url: true, alt: true },
+        take: 1,
+      },
+    },
+    orderBy: { title: "asc" },
+  });
+}
 // ---------------------------------------------------------------------------
 // getNavTours — arma la estructura del menú de navegación: una entrada por
 // categoría (Inca Trail, Cusco & Sacred Valley, etc.), cada una con la
